@@ -1,0 +1,4 @@
+- fazer a criptografia ao salvar adm ou colaborador e ao recuperar 
+descriptografar
+- fazer a rota para deslogar
+- fazer a intalação do session e passar os valores para o pannel
