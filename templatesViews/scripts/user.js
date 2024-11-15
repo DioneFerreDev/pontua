@@ -29,52 +29,64 @@ function managerFunction() {
     onTrocar();
     logUser();
 }
-async function sendPoints() {
-    try {
-        let pontos = document.getElementById("box-pontos").value;
-        if (pontos === "") return
-        pontos = pontos.replace(",", ".")
-        pontos = Number(pontos)
+// async function sendPoints() {
+//     try {
+//         let pontos = document.getElementById("box-pontos").value;
+//         if (pontos === "") return
+//         pontos = pontos.replace(",", ".")
+//         pontos = Number(pontos)
 
-        // simulando a forma de transferir pontos
-        // Cria ou conecta ao canal chamado 'meuCanal'
-        const channel = new BroadcastChannel('meuCanal');
+//         // simulando a forma de transferir pontos
+//         // Cria ou conecta ao canal chamado 'meuCanal'
+//         const channel = new BroadcastChannel('meuCanal');
 
-        // Envia o valor pelo canal
-        channel.postMessage(pontos * 10);
-        document.getElementById("box-pontos").value = "";
+//         // Envia o valor pelo canal
+//         channel.postMessage(pontos * 10);
+//         document.getElementById("box-pontos").value = "";
 
-        const URL_PONTOS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?valor=${pontos}`;
-        const prop = {
-            method: 'POST',
-            headers: {
-                'Accept': '*/*'
-            },
-        }
-        await new GenerateFetch(URL_PONTOS, prop);
-    } catch (error) { console.log(error) }
-}
-async function validationUser() {
-    // fazer aqui provavelmente uma nova rota para deslogar
-    try {
-        const URL_ADM = "/adm/authEmpresa/validarToken";
-        const validate_options = {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        }
-        const isLogged = await new GenerateFetch(URL_ADM, validate_options);
-        console.log(isLogged);
+//         // vk
+//         const URL_API_SEND_POINTS = "/api/send-points";
+//         // const URL_PONTOS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?valor=${pontos}`;
+//         // const prop = {
+//         //     method: 'POST',
+//         //     headers: {
+//         //         'Accept': '*/*'
+//         //     },
+//         // }
+//         const dados = { pontos }
+//         const options = {
+//             method: 'POST',
+//             headers: {
+//                 'Accept': '*/*',
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify(dados)
+//         }
 
-    } catch (error) {
-        console.log(error)
-    }
+//         await new GenerateFetch(URL_PONTOS, prop);
+//     } catch (error) { console.log(error) }
+// }
+// async function validationUser() {
+//     // fazer aqui provavelmente uma nova rota para deslogar
+//     try {
+//         const URL_ADM = "/adm/authEmpresa/validarToken";
+//         const validate_options = {
+//             method: 'GET',
+//             credentials: 'include',
+//             headers: {
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json'
+//             }
+//         }
+//         const isLogged = await new GenerateFetch(URL_ADM, validate_options);
+//         console.log(isLogged);
 
-    // window.location.href = "/";
-}
+//     } catch (error) {
+//         console.log(error)
+//     }
+
+//     // window.location.href = "/";
+// }
 function quit() {
     document.getElementById("quit").addEventListener("click", async e => {
         const isQuit = new confirmation("Deseja realmente sair do Painel de usuários?");
@@ -83,7 +95,7 @@ function quit() {
             const data = await new GenerateFetch("api/logout");
             if (data.logout)
                 window.location.href = "/";
-            else 
+            else
                 alert("NÃO FOI POSSÍVEL FAZER O LOGOUT")
         }
     })
@@ -150,9 +162,8 @@ function logUser() {
             alert('Enviando formulário...');
 
             try {
-                // voltar aqui user
-                const URL_USER = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/Create";
-                const dados = { user: nome, password: senha };
+                // vk                                
+                const dados = { user: nome, password: senha };               
                 const options = {
                     method: 'POST',
                     headers: {
@@ -161,7 +172,8 @@ function logUser() {
                     },
                     body: JSON.stringify(dados)
                 }
-                await new GenerateFetch(URL_USER, options);
+                const URL_API_USER = "/api/create-user";
+                await new GenerateFetch(URL_API_USER, options);                                
                 new resetarForm("form-user");
                 effectPannel(`usuario ${nome} registrado com sucesso!.`, "message-pannel", "user-title");
                 await preencherTabUsers();

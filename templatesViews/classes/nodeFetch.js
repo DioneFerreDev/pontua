@@ -12,6 +12,7 @@ class nodeFetch {
         else
             return await this.optionFetch()
     }
+    
     async simpleFetch() {
         try {
             const response = await fetch(this.url)

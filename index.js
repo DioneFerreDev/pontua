@@ -7,8 +7,6 @@ const clienteRouter = require("./routes/clienteRouter");
 const pannelRouter = require("./routes/pannelRouter");
 const homeRouter = require("./routes/homeRouter");
 const apiRouter = require("./routes/apiRouter");
-const apiController = require('./controllers/apiController');
-const authPannelController = require('./controllers/authPannelController');
 const session = require("express-session");
 
 
@@ -20,10 +18,10 @@ app.use(session({ secret: process.env.SECRET_SESSION, resave: true, saveUninitia
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "templatesViews/")));
-app. use("/",homeRouter);
-app.use("/cliente", clienteRouter);
 app.use("/api",apiRouter);
+app.use("/cliente", clienteRouter);
 app.use("/pannel",pannelRouter);
+app. use("/",homeRouter);
 
 app.get("/unAuth", (req, res) => { res.render("unAuth") });
 

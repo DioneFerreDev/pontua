@@ -6,6 +6,7 @@ const authPannel = require("../controllers/authPannelController");
 // fazer o logout aqui
 router.get("/logout", apiController.logout);
 router.post("/login", apiController.login);
+router.post("/create-user", authPannel, apiController.createUser);
 
 
 

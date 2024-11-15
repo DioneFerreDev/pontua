@@ -38,6 +38,31 @@ module.exports =
 
         } catch (error) { console.log(error); res.send({ log: false }) }
 
+    },
+    createUser: async (req, res) => {
+        try {
+            const URL_USER = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/Create";
+            const user = req.body.user;
+            const password = req.body.password;
+            const dados = { user, password }
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            }
+            let resposta = new nodeFetch(URL_USER, options);
+            resposta = resposta.manageFetch();
+            const msg = `resposta chegou com sucesso na API do create user com o use de ${user} e password de ${password}`;
+            console.log(resposta);
+            console.log(msg);
+            res.status(200).send(msg);
+        } catch (error) {
+            console.log(error);
+            res.status(401).send({ logout: false });
+        }
     }
 
 }
