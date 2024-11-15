@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const apiController = require("../controllers/apiController");
+const pannelController = require("../controllers/pannelController");
 const authPannel = require("../controllers/authPannelController");
 
-// fazer o logout aqui
-router.get("/logout", apiController.logout);
-router.post("/login", apiController.login);
+
+router.get("/", authPannel, pannelController.render);
 
 
 

@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function managerFunction() {
     onCloseWindow()
     maskMoney()
-    touchList();    
+    touchList();
     mainList();
     maskCPF();
     onInserir();
@@ -27,10 +27,6 @@ function managerFunction() {
     actionBtnOnOff()
     editUser();
     onTrocar();
-
-    const userName = localStorage.getItem("user");
-    // console.log();
-    document.getElementById("user-name").innerHTML = userName;
     logUser();
 }
 async function sendPoints() {
@@ -65,14 +61,14 @@ async function validationUser() {
         const validate_options = {
             method: 'GET',
             credentials: 'include',
-            headers: {                
+            headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }
-        const isLogged = await new GenerateFetch(URL_ADM,validate_options);
+        const isLogged = await new GenerateFetch(URL_ADM, validate_options);
         console.log(isLogged);
-        
+
     } catch (error) {
         console.log(error)
     }
@@ -80,12 +76,15 @@ async function validationUser() {
     // window.location.href = "/";
 }
 function quit() {
-    document.getElementById("quit").addEventListener("click", e => {
+    document.getElementById("quit").addEventListener("click", async e => {
         const isQuit = new confirmation("Deseja realmente sair do Painel de usuários?");
         if (isQuit.result) {
-            localStorage.removeItem("user");
-            localStorage.removeItem("admin");
-            validationUser();
+            // fazer aqui a remoção do token            
+            const data = await new GenerateFetch("api/logout");
+            if (data.logout)
+                window.location.href = "/";
+            else 
+                alert("NÃO FOI POSSÍVEL FAZER O LOGOUT")
         }
     })
 }

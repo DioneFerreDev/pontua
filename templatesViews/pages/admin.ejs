@@ -19,7 +19,7 @@
         <section class="side-bar">
             <div class="title-user">
                 <i id="skip-side-bar" class="fa-solid fa-circle-chevron-right"></i>
-                <h3 id="user-name"></h3>
+                <h3 id="user-name"><%= user %></h3>
             </div>
 
             <div class="wrap-ul-admin">
@@ -159,7 +159,7 @@
             <div class="clientes-content contents-logged">
                 <div class="wrap-content-clientes">
                     <form id="manage-clientes">
-                        <input id="cpf-cliente" type="text" placeholder="procurar CPF">
+                        <input id="cpf-cliente" type="text" placeholder="procurar CPF" autocomplete="off">
                     </form>
                     <div class="message-pannel message-cliente">
                         <h3 id="title-message-cliente"></h3>
@@ -250,7 +250,7 @@
                                     <input id="pontos-cientes" type="hidden" />
                                 </div>
                                 <div>
-                                    <input id="cliente-cpf" type="text" placeholder="CPF do cliente" required>
+                                    <input id="cliente-cpf" type="text" placeholder="CPF do cliente" required autocomplete="off">
                                 </div>
                                 <button id="btn-pontos-produtos" class="btn-enviar"
                                     style="margin-top: 10px;">Trocar</button>
@@ -275,7 +275,7 @@
     <script src="https://cdn.jsdelivr.net/gh/plentz/jquery-maskmoney@master/dist/jquery.maskMoney.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="../classes/MainClass.js"></script>
-    <!-- <script src="../scripts/user.js"></script> -->
+    <script src="../scripts/user.js"></script>
     <script src="../scripts/painelRoleta.js"></script>
 </body>
 
