@@ -2,8 +2,12 @@
 - fazer a intalação do session e passar os valores para o pannel OK
 - fazer a rota para deslogar OK
 - tirar o autocomplete dos input CPF OK
-
+- pegar empresa/redirect e fazer a api q vai retornar a tela cliente OK
 
 - fazer a api para cada requisição no front escondendo as URLs reais
 - fazer a criptografia ao salvar adm ou colaborador e ao recuperar 
 descriptografar com bcrypt
+- depois de pronto, retirar todas as funções comentadas
+- em apiController setei na session um uuid provisório, depois voltar para arrumar
+- arrumar o upload do user pois o endpoint n está mais funcionando
+- arrumar o enviar pontos pois  esta dando cors

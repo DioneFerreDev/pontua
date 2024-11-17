@@ -117,7 +117,8 @@ async function atualizarRoleta() {
         produtoDescricao: produto.produtoDescricao,
         data: new calendario().time,
         pontos: produto.pontos,
-        isRoleta
+        isRoleta,
+        empresaId:"<%= empresaId %>"
     }
     console.log(produto)
     console.log(produtoAtualizado)

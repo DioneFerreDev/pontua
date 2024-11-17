@@ -21,7 +21,7 @@ class nodeFetch {
             const contentType = response.headers.get("Content-Type");            
             if (contentType.includes('application/json')) return await response.json();
             if (contentType.includes('text/plan')) return await response.text();
-            return response.statusText();
+            return response.statusText;
         } catch (error) { throw error }
     }
     async optionFetch() {
@@ -32,7 +32,7 @@ class nodeFetch {
             const contentType = response.headers.get("Content-Type");            
             if (contentType.includes('application/json')) return await response.json();
             if (contentType.includes('text/plan')) return await response.text();
-            return response.statusText();
+            return response.statusText;
         } catch (error) { throw error }       
     }
 

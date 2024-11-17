@@ -21,7 +21,7 @@ function validationUser() {
 }
 function playUserHome() {
     // verificar a validação do token
-    validarToken();
+    // validarToken();
     // validationUser();
     // receivePontos();
     $('#cpf').mask('000.000.000-00', { reverse: true });
@@ -714,7 +714,7 @@ async function drawRoleta() {
 //     });
 // }
 function testeRoleta(el) {
-    console.log(el)
+    
 }
 async function registrarRoleta(ultCPF, winnerProduct) {
     const pontosRoleta = 0;
@@ -853,8 +853,8 @@ function onInserir() {
 }
 async function inserirAlterarCPF(cpf) {
     try {
-        //const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`
-        const URL = `http://192.168.0.103:5000/Cliente/${cpf}`
+        const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`
+        // const URL = `http://192.168.0.103:5000/Cliente/${cpf}`
         const cliente = await new GenerateFetch(URL);
 
         if (cliente.length === 0) {
@@ -929,8 +929,7 @@ async function inserirAlterarCPF(cpf) {
             }
 
             /// caso deu 400 liberar para jogar ou trocar por produtos
-            // if (clientePontos.status === 400) return            
-            console.log(`cliente atualizado com pontuação de ${clientePontos.pontosInseridos} e um total de ${clientePontos.totalPontos} pontos`);
+            // if (clientePontos.status === 400) return                        
             receivePontos(clientePontos.pontosInseridos)
             let pontosTela = document.getElementById("pontos-atuais");
             pontosTela.innerHTML = "";

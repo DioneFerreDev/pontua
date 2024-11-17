@@ -19,7 +19,9 @@
         <section class="side-bar">
             <div class="title-user">
                 <i id="skip-side-bar" class="fa-solid fa-circle-chevron-right"></i>
-                <h3 id="user-name"><%= user %></h3>
+                <h3 id="user-name">
+                    <%= user %>
+                </h3>
             </div>
 
             <div class="wrap-ul-admin">
@@ -32,31 +34,34 @@
                             style="display: none;text-align: center;"></i>
                         <div class="side-bar-full">CADASTRAR PRODUTOS</div>
                     </li>
-                    <li id="usuarios"><i class="fa-solid fa-user-plus i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">CADASTRAR USER</div>
-                    </li>
-                    <!-- <li id="pontos">ABATER PONTOS</li> -->
-                    <li id="roleta"><i class="fa-solid fa-dharmachakra i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">ROLETA</div>
-                    </li>
-                    <li id="pontos-produtos"><i class="fa-solid fa-arrow-right-arrow-left i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">PONTOS por PRODUTOS</div>
-                    </li>
-                    <li id="send"><i class="fa-solid fa-sack-dollar i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">ENVIAR PONTOS</div>
-                    </li>                    
-                    <!-- <li id="client-screen"><i class="fa-solid fa-tablet-screen-button i-side-bar"
+
+                    <% if(isAdmin){ %>
+                        <li id="usuarios"><i class="fa-solid fa-user-plus i-side-bar"
+                                style="display: none;text-align: center;"></i>
+                            <div class="side-bar-full">CADASTRAR USER</div>
+                        </li>
+                        <% } %>
+                            <!-- <li id="pontos">ABATER PONTOS</li> -->
+                            <li id="roleta"><i class="fa-solid fa-dharmachakra i-side-bar"
+                                    style="display: none;text-align: center;"></i>
+                                <div class="side-bar-full">ROLETA</div>
+                            </li>
+                            <li id="pontos-produtos"><i class="fa-solid fa-arrow-right-arrow-left i-side-bar"
+                                    style="display: none;text-align: center;"></i>
+                                <div class="side-bar-full">PONTOS por PRODUTOS</div>
+                            </li>
+                            <li id="send"><i class="fa-solid fa-sack-dollar i-side-bar"
+                                    style="display: none;text-align: center;"></i>
+                                <div class="side-bar-full">ENVIAR PONTOS</div>
+                            </li>
+                            <!-- <li id="client-screen"><i class="fa-solid fa-tablet-screen-button i-side-bar"
                             style="display: none;text-align: center;"></i>
                         <div class="side-bar-full">TELA TABLET</div>
                     </li> -->
-                    <li id="quit"><i class="fa-solid fa-right-from-bracket i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">SAIR</div>
-                    </li>
+                            <li id="quit"><i class="fa-solid fa-right-from-bracket i-side-bar"
+                                    style="display: none;text-align: center;"></i>
+                                <div class="side-bar-full">SAIR</div>
+                            </li>
                 </ul>
             </div>
             <!--wrap-ul-admin-->
@@ -250,7 +255,8 @@
                                     <input id="pontos-cientes" type="hidden" />
                                 </div>
                                 <div>
-                                    <input id="cliente-cpf" type="text" placeholder="CPF do cliente" required autocomplete="off">
+                                    <input id="cliente-cpf" type="text" placeholder="CPF do cliente" required
+                                        autocomplete="off">
                                 </div>
                                 <button id="btn-pontos-produtos" class="btn-enviar"
                                     style="margin-top: 10px;">Trocar</button>
@@ -277,6 +283,19 @@
     <script src="../classes/MainClass.js"></script>
     <script src="../scripts/user.js"></script>
     <script src="../scripts/painelRoleta.js"></script>
+    <% if(isAdmin){ %>
+        <script>
+            document.getElementById("usuarios").addEventListener("click", async e => {
+                let contents = document.querySelectorAll(".contents-logged");
+                contents.forEach(content => content.style.display = "none");
+                document.querySelector(".users-content").style.display = "flex";
+                await preencherTabUsers();
+
+                document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
+                document.getElementById("usuarios").classList.add("choose")
+            })
+        </script>
+        <% } %>
 </body>
 
 </html>

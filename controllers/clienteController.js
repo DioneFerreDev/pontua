@@ -24,16 +24,17 @@ module.exports =
             res.status(401);
         }
     },
-    validarToken: async (req, res) => {
+    validarToken: async (req, res, next) => {
         console.log('tentando validar no controller')
-        const token = req.cookies['authorization-token'] || req.header("Authorization")?.replace("Bearer ", "");
-        if (!token) return res.status(401).send("access denied");
-    
+        const token = req.cookies['authorization-cliente-token'];
+        if (!token) return res.status(401).redirect("/unAuth");
+
         try {
             const userVerified = await jwt.verify(token, process.env.TOKEN_SECRET);
-            res.status(200).send(userVerified);
+            console.log(userVerified);
+            next();
         } catch (error) {
-            res.status(401).send("user expired");
+            res.status(401).redirect("/unAunth");
         }
     }
 

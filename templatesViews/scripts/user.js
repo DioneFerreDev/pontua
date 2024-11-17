@@ -29,43 +29,44 @@ function managerFunction() {
     onTrocar();
     logUser();
 }
-// async function sendPoints() {
-//     try {
-//         let pontos = document.getElementById("box-pontos").value;
-//         if (pontos === "") return
-//         pontos = pontos.replace(",", ".")
-//         pontos = Number(pontos)
+async function sendPoints() {
+    try {
+        let pontos = document.getElementById("box-pontos").value;
+        if (pontos === "") return
+        pontos = pontos.replace(",", ".")
+        pontos = Number(pontos)
 
-//         // simulando a forma de transferir pontos
-//         // Cria ou conecta ao canal chamado 'meuCanal'
-//         const channel = new BroadcastChannel('meuCanal');
+        // simulando a forma de transferir pontos
+        // Cria ou conecta ao canal chamado 'meuCanal'
+        const channel = new BroadcastChannel('meuCanal');
 
-//         // Envia o valor pelo canal
-//         channel.postMessage(pontos * 10);
-//         document.getElementById("box-pontos").value = "";
+        // Envia o valor pelo canal
+        channel.postMessage(pontos * 10);
+        document.getElementById("box-pontos").value = "";
 
-//         // vk
-//         const URL_API_SEND_POINTS = "/api/send-points";
-//         // const URL_PONTOS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?valor=${pontos}`;
-//         // const prop = {
-//         //     method: 'POST',
-//         //     headers: {
-//         //         'Accept': '*/*'
-//         //     },
-//         // }
-//         const dados = { pontos }
-//         const options = {
-//             method: 'POST',
-//             headers: {
-//                 'Accept': '*/*',
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(dados)
-//         }
+        // vk
+        // const URL_API_SEND_POINTS = "/api/send-points";
+        const id = "<% empresaId %>";
+        const URL_PONTOS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?uuid=${id}&valor=${pontos}`;
+        const prop = {
+            method: 'POST',
+            headers: {
+                'Accept': '*/*'
+            },
+        }
+        const dados = { pontos };
+        const options = {
+            method: 'POST',
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dados)
+        }
 
-//         await new GenerateFetch(URL_PONTOS, prop);
-//     } catch (error) { console.log(error) }
-// }
+        await new GenerateFetch(URL_PONTOS, prop);
+    } catch (error) { console.log(error) }
+}
 // async function validationUser() {
 //     // fazer aqui provavelmente uma nova rota para deslogar
 //     try {
@@ -209,7 +210,7 @@ function touchList() {
         } catch (error) { console.log(error) }
 
 
-    })
+    })    
     document.getElementById("send").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
@@ -217,16 +218,16 @@ function touchList() {
 
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("send").classList.add("choose")
-    })
-    document.getElementById("usuarios").addEventListener("click", async e => {
-        let contents = document.querySelectorAll(".contents-logged");
-        contents.forEach(content => content.style.display = "none");
-        document.querySelector(".users-content").style.display = "flex";
-        await preencherTabUsers();
+    })    
+    // document.getElementById("usuarios").addEventListener("click", async e => {
+    //     let contents = document.querySelectorAll(".contents-logged");
+    //     contents.forEach(content => content.style.display = "none");
+    //     document.querySelector(".users-content").style.display = "flex";
+    //     await preencherTabUsers();
 
-        document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
-        document.getElementById("usuarios").classList.add("choose")
-    })
+    //     document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
+    //     document.getElementById("usuarios").classList.add("choose")
+    // })
     document.getElementById("pontos-produtos").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
@@ -235,9 +236,9 @@ function touchList() {
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("pontos-produtos").classList.add("choose")
 
-        try {
-            const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll"
-            const produtos = await new GenerateFetch(URL_PRODUTOS);
+        try {            
+            const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos";                        
+            const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
             buildList(produtos);
             onclickListPontoProduto()
         } catch (error) { console.log(error) }
@@ -343,7 +344,8 @@ async function onTrocar() {
             const dados = {
                 cpf: ultCPF,
                 sku: obj.sku,
-                produtoDescricao: obj.produtoDescricao
+                produtoDescricao: obj.produtoDescricao,
+                empresaId:"<% empresaId %>"
             }
             const options = {
                 method: 'POST',
@@ -705,7 +707,7 @@ async function btnSalvarProduto() {
         // simulando o salvamento aqui
         try {
             const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Create";
-            const dados = { sku, produtoDescricao: produto, data, pontos, isRoleta: false };
+            const dados = { sku, produtoDescricao: produto, data, pontos, isRoleta: false, empresaId:"<%= empresaId %>" };
             // aqui voltar
             const prop = {
                 method: 'POST',
@@ -1036,7 +1038,7 @@ async function editUser() {
         const name = document.getElementById("name").value
         const password = document.getElementById("password").value
         const repassword = document.getElementById("re-password").value
-        let admin = document.getElementById("nivel").value
+        let admin = document.getElementById("nivel").value;
         console.log(admin)
         admin = (admin === "admin") ? true : false;
         if (password !== repassword) {
