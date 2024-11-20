@@ -1,6 +1,7 @@
+
 let arrProdutos = [];
 let produtoSelected = null;
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {    
     managerFunction();
 });
 
@@ -33,27 +34,11 @@ async function sendPoints() {
     try {
         let pontos = document.getElementById("box-pontos").value;
         if (pontos === "") return
-        pontos = pontos.replace(",", ".")
-        pontos = Number(pontos)
-
-        // simulando a forma de transferir pontos
-        // Cria ou conecta ao canal chamado 'meuCanal'
-        const channel = new BroadcastChannel('meuCanal');
-
-        // Envia o valor pelo canal
-        channel.postMessage(pontos * 10);
+        pontos = pontos.replace(",", ".");
+        pontos = Number(pontos);
         document.getElementById("box-pontos").value = "";
 
-        // vk
-        // const URL_API_SEND_POINTS = "/api/send-points";
-        const id = "<% empresaId %>";
-        const URL_PONTOS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?uuid=${id}&valor=${pontos}`;
-        const prop = {
-            method: 'POST',
-            headers: {
-                'Accept': '*/*'
-            },
-        }
+        const URL_API_SEND_API = "api/send-points";
         const dados = { pontos };
         const options = {
             method: 'POST',
@@ -63,8 +48,7 @@ async function sendPoints() {
             },
             body: JSON.stringify(dados)
         }
-
-        await new GenerateFetch(URL_PONTOS, prop);
+        await new GenerateFetch(URL_API_SEND_API, options);
     } catch (error) { console.log(error) }
 }
 // async function validationUser() {
@@ -163,8 +147,7 @@ function logUser() {
             alert('Enviando formulário...');
 
             try {
-                // vk                                
-                const dados = { user: nome, password: senha };               
+                const dados = { user: nome, password: senha };
                 const options = {
                     method: 'POST',
                     headers: {
@@ -174,7 +157,7 @@ function logUser() {
                     body: JSON.stringify(dados)
                 }
                 const URL_API_USER = "/api/create-user";
-                await new GenerateFetch(URL_API_USER, options);                                
+                await new GenerateFetch(URL_API_USER, options);
                 new resetarForm("form-user");
                 effectPannel(`usuario ${nome} registrado com sucesso!.`, "message-pannel", "user-title");
                 await preencherTabUsers();
@@ -188,10 +171,7 @@ function logUser() {
 function buscarUsers() {
     console.log("ter q programar ainda")
 }
-function touchList() {
-    // document.getElementById("client-screen").addEventListener("click", () => {
-    //     window.location.href = "./cliente.html";
-    // })
+function touchList() {    
     document.getElementById("produtos").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
@@ -210,7 +190,7 @@ function touchList() {
         } catch (error) { console.log(error) }
 
 
-    })    
+    })
     document.getElementById("send").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
@@ -218,7 +198,7 @@ function touchList() {
 
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("send").classList.add("choose")
-    })    
+    })
     // document.getElementById("usuarios").addEventListener("click", async e => {
     //     let contents = document.querySelectorAll(".contents-logged");
     //     contents.forEach(content => content.style.display = "none");
@@ -236,8 +216,8 @@ function touchList() {
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("pontos-produtos").classList.add("choose")
 
-        try {            
-            const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos";                        
+        try {
+            const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos";
             const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
             buildList(produtos);
             onclickListPontoProduto()
@@ -310,42 +290,50 @@ async function onTrocar() {
 
         // let cliente = document.getElementById("input-hidden-cliente").value;
         try {
-            let objCliente = await new GenerateFetch(`https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${ultCPF}`);
-            if (objCliente.length === 0) {
+            // vk
+            const URL_CLIENTE = "api/cliente";
+            const info = { cpf: ultCPF };
+            const optionsCliente = {
+                method: "POST",
+                headers: {
+                    "Accept": "*/*",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(info)
+            }
+            let hisCliente = await new GenerateFetch(URL_CLIENTE, optionsCliente, true);
+            if (hisCliente.length === 0) {
                 alert(`Cliente de CPF ${ultCPF} não cadastrado!!!`);
                 return
             }
             // fazer a verificação do nome aqui
             let nome = "";
-            if (objCliente[0].nomeCliente === null) {
+            if (hisCliente[0].nomeCliente === null) {
                 nome = prompt("Cliente não registrado o nome, registre seu nome agora:");
-                const URL_CPF_NOME = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/NomearCliente ${ultCPF}, ${nome}`;
+                const URL_API_CPF_NOME = "api/nome-cpf";
                 const options = {
                     method: 'POST',
                     headers: {
-                        'Accept': '*/*'
-                    }
+                        'Accept': '*/*',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nome: nome, cpf: ultCPF })
                 }
-                await new GenerateFetch(URL_CPF_NOME, options)
+                await new GenerateFetch(URL_API_CPF_NOME, options)
             }
             let totalPontos = 0;
-            objCliente.forEach(cl => totalPontos += cl.pontos);
-
+            hisCliente.forEach(cl => totalPontos += cl.pontos);
             if (totalPontos < obj.pontos) {
                 alert(`Infelizmente seus ${totalPontos} pontos são insuficientes para trocar pelo produto que vale ${obj.pontos} `);
                 return;
             }
             if (!new confirmation(`Deseja realmente trocar ${obj.pontos} pontos por ${obj.produtoDescricao}?`).result) return
 
-            // voltar aqui e fazer essa troca no back
-            console.log(obj);
-            // try {
-            const URL_TROCA = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/TrocarPontos`;
+            const URL_API_TROCA = "api/trocar-pontos";
             const dados = {
                 cpf: ultCPF,
                 sku: obj.sku,
-                produtoDescricao: obj.produtoDescricao,
-                empresaId:"<% empresaId %>"
+                produtoDescricao: obj.produtoDescricao
             }
             const options = {
                 method: 'POST',
@@ -355,7 +343,7 @@ async function onTrocar() {
                 },
                 body: JSON.stringify(dados)
             }
-            new GenerateFetch(URL_TROCA, options)
+            new GenerateFetch(URL_API_TROCA, options)
         } catch (error) { console.log(error) }
 
         // fazer a animação da messagem
@@ -384,10 +372,7 @@ function buildList(produtos) {
         const objStr = JSON.stringify(produtos[i]);
         hidden.value = objStr;
     })
-
-    console.log(document.querySelector(".wrap-pontos-produtos").clientHeight);
     document.getElementById("wrap-pontos-produtos").style.height = `${alt - 55}px`;
-    console.log(window.innerHeight)
 }
 function onclickListPontoProduto() {
     const lis = document.querySelectorAll(".li-ponto-produto");
@@ -406,16 +391,16 @@ function onclickListPontoProduto() {
 }
 async function puxarProdutos() {
     try {
-        const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll";
-        const produtos = await new GenerateFetch(URL_PRODUTOS);
+        const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos";
+        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
         arrProdutos = produtos;
         return produtos
     } catch (error) { console.log(error) }
 }
 async function telaClientes() {
     try {
-        const URL_CLIENTES = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/ListAll";
-        let clientes = await new GenerateFetch(URL_CLIENTES);
+        const URL_API_CLIENTES = "api/all-clientes";
+        let clientes = await new GenerateFetch(URL_API_CLIENTES);
         clientes = dateToRecent(clientes)
         if (clientes.length === 0) return
         let wrapClientes = document.querySelector(".wrap-table-clientes");
@@ -425,10 +410,8 @@ async function telaClientes() {
 }
 async function preencherTabUsers() {
     try {
-        const URL_USERS = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/ListAll`;
-        const users = await new GenerateFetch(URL_USERS);
-        console.log(users);
-
+        const URL_API_USERS = "api/all-users";
+        const users = await new GenerateFetch(URL_API_USERS);
         const wrap = document.querySelector(".wrap-table-usuarios");
         const rows = users.map(user => {
 
@@ -460,61 +443,6 @@ async function preencherTabUsers() {
         wrap.innerHTML = table;
     } catch (error) { console.log(error) }
 }
-function preencherTabClientes(clientes) {
-    clientes = clientes.map(cliente => {
-        let isRoleta = cliente.isRoleta ? "SIM" : "NÃO";
-        let produtoDescricao = cliente.produtoDescricao === null ? "" : cliente.produtoDescricao;
-
-        return {
-            cpf: cliente.cpf, data: cliente.data, nomeCliente: cliente.nomeCliente,
-            pontos: cliente.pontos, produtoDescricao, isRoleta
-        }
-    })
-    clientes = dateToRecent(clientes);
-    // repartindo a data em dia e hora
-    clientes = clientes.map(cliente => {
-        const parts = cliente.data.split(/[\s]/);
-        // cpf: cliente.cpf
-        return {
-            cpf: "###########", nomeCliente: (cliente.nomeCliente !== null) ? cliente.nomeCliente : "", dataDia: parts[0], dataHora: parts[1], pontos: cliente.pontos,
-            produtoDescricao: cliente.produtoDescricao, isRoleta: cliente.isRoleta
-        }
-    })
-
-    tbodyClientes = clientes.map(cliente => {
-
-        const clienteStr = JSON.stringify(cliente);
-        return `
-        <tr>
-            <td>${cliente.cpf}</td>
-            <td>${cliente.nomeCliente}</td>
-            <td>${cliente.dataDia}</td>
-            <td>${cliente.dataHora}</td>
-            <td>${cliente.pontos}</td>
-            <td>${cliente.produtoDescricao}</td>
-            <td>${cliente.isRoleta}</td>
-            <td><input class="hidden-movimentation" value='${clienteStr}'  type="hidden" /><i id=${cliente.cpf} class="fa-solid fa-trash-can del-cliente" onclick="btnDel(this)"></i></td>
-        </tr>        
-        `
-    }).join('');
-
-    let tab =
-        `<table>
-                <thead>                    
-                    <th>CPF</th>
-                    <th>NOME</th>
-                    <th>DIA</th>
-                    <th>HORA</th>
-                    <th>PONTOS</th>
-                    <th>PRODUTO</th>
-                    <th>ROLETA</th>
-                    <th>DEL</th>
-                </thead>
-                <tbody>${tbodyClientes}</tbody>
-            </table>
-    `
-    return tab
-}
 function maskCPF() {
     $('#cpf-cliente').mask('000.000.000-00', { reverse: true });
     $('#cliente-cpf').mask('000.000.000-00', { reverse: true });
@@ -529,9 +457,16 @@ async function procurarMovimentacoesCliente(cpf) {
     if (!isValid) return
 
     try {
-        const URL_CLIENTE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`;
-        let cliente = await new GenerateFetch(URL_CLIENTE);
-        // aqui
+        const URL_API_CLIENTE = "api/cliente";
+        const options = {
+            method: "POST",
+            headers: {
+                "Accept": "*/*",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cpf })
+        }
+        let cliente = await new GenerateFetch(URL_API_CLIENTE, options, true);
         cliente = dateToRecent(cliente)
         let pontos = 0;
         cliente.forEach(cl => pontos += Number(cl.pontos));
@@ -627,14 +562,17 @@ function btnEditlProduto() {
 }
 async function deletarProduto(sku, descricao) {
     try {
-        const URL_DEL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Delete ${sku}, ${descricao}`;
-        const prop = {
-            method: 'DELETE',
+        const URL_API_DEL_PRODUTO = "api/delete-produto";
+        const options = {
+            method: "POST",
             headers: {
-                'Accept': '*/*'
+                "Accept": "*/*",
+                "Content-Type": "application/json"
             },
+            body: JSON.stringify({ sku, descricao })
         }
-        await new GenerateFetch(URL_DEL, prop);
+        await new GenerateFetch(URL_API_DEL_PRODUTO, options);
+
         const produtos = await puxarProdutos();
         document.querySelector(".wrap-table-produtos").innerHTML = preencherTabProdutos(produtos);
         effectPannel(`cliente deletado com sucesso!!!`, "message-cliente", "title-message-cliente");
@@ -646,41 +584,22 @@ async function deletarProduto(sku, descricao) {
 async function deletarCliente(cpf, data) {
 
     try {
-        const URL_DEL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Delete`;
-        const dados = { cpf, data }
-        const prop = {
-            method: 'DELETE',
+        const URL_API_DEL_USER = "api/delete-Cliente";        
+        const dados = { cpf, data }                
+        const options = {
+            method: 'POST',
             headers: {
                 'Accept': '*/*',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dados)
         }
-        await new GenerateFetch(URL_DEL, prop);
+        await new GenerateFetch(URL_API_DEL_USER, options);
         telaClientes();
         effectPannel(`cliente deletado com sucesso!!!`, "message-cliente", "title-message-cliente");
     } catch (error) { console.log(error) }
 }
-// async function deletarProduto(cpf) {
-//     const data = new calendario().time;
-//     console.log(data)
 
-//     try {
-//         const URL_DEL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Delete`;
-//         const dados = { cpf, data }
-//         const prop = {
-//             method: 'DELETE',
-//             headers: {
-//                 'Accept': '*/*',
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(dados)
-//         }
-//         await new GenerateFetch(URL_DEL, prop);
-//         telaClientes();
-//         effectPannel(`cliente deletado com sucesso!!!`, "message-cliente", "title-message-cliente");
-//     } catch (error) { console.log(error) }
-// }
 function effectPannel(message, classPannel, idTitle) {
     const pannel = document.querySelector(`.${classPannel}`);
     const title = document.getElementById(idTitle);
@@ -704,12 +623,10 @@ async function btnSalvarProduto() {
         if (produto === "" && pontos === 0 && sku === "" || pontos === "") return
 
         const data = new calendario().time
-        // simulando o salvamento aqui
         try {
-            const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Create";
-            const dados = { sku, produtoDescricao: produto, data, pontos, isRoleta: false, empresaId:"<%= empresaId %>" };
-            // aqui voltar
-            const prop = {
+            const URL_SAVE_PRODUTO = "api/salvar-produto";
+            const dados = { sku, produtoDescricao: produto, data, pontos, isRoleta: false };
+            const options = {
                 method: 'POST',
                 headers: {
                     'Accept': '*/*',
@@ -717,7 +634,7 @@ async function btnSalvarProduto() {
                 },
                 body: JSON.stringify(dados)
             }
-            await new GenerateFetch(URL_PRODUTOS, prop);
+            await new GenerateFetch(URL_SAVE_PRODUTO, options);
             new resetarForm("manage-produto")
 
             // puxar todos produtos e atualizar
@@ -732,31 +649,36 @@ async function btnSalvarProduto() {
 function btnAtualisarProduto() {
     const salvar = document.getElementById("atualisar-produto");
 
+    // mudar a lógica
     salvar.addEventListener("click", async e => {
         e.preventDefault();
         const produto = document.getElementById("produto").value;
         let pontos = document.getElementById("pontos-produto").value
         pontos = Number(pontos)
-        const sku = document.getElementById("sku").value
+        const hidden = document.getElementById("hidden-update-produto");
+        let sku = hidden.value;
+        sku = JSON.parse(sku);
+        sku = sku.sku;
 
         if (produto === "" && pontos === 0 && sku === "" || pontos === "") return
         const data = new calendario().time;
-        const dadosProduto = arrProdutos.filter(pr => pr.sku === sku && pr.produtoDescricao === produto)[0];
+        const dadosProduto = arrProdutos.filter(pr => pr.sku === sku)[0];
+        console.log(dadosProduto)
 
         try {
-            const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Update";
-            const dados = { sku, produtoDescricao: produto, data, pontos, isRoleta: dadosProduto.isRoleta };
-            // aqui voltar
-            const prop = {
-                method: 'PUT',
+            const URO_API_UPDATE_PRODUTO = "api/update-produto";
+            const options = {
+                method: "POST",
                 headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json'
+                    "Accept": "*/*",
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify(dados)
+                body: JSON.stringify({ sku, produtoDescricao: produto, data, pontos, isRoleta: dadosProduto.isRoleta })
             }
-            await new GenerateFetch(URL_PRODUTOS, prop);
+            await new GenerateFetch(URO_API_UPDATE_PRODUTO, options);
+            console.log('agora é resetar e atualizar')
             new resetarForm("manage-produto");
+            hidden.value = "";
             document.getElementById("atualisar-produto").style.display = "none";
             document.getElementById("salvar-produto").style.display = "block";
 
@@ -784,7 +706,7 @@ function preencherTabProdutos(produtos) {
             <td>${produto.dataHora}</td>
             <td>${produto.pontos}</td>
             <td><i id=${produto.sku} sku=${produto.produtoDescricao} class="fa-solid fa-trash-can del-produto"></i></td>
-            <td><i id=${produto.sku} value=${produto.produtoDescricao} class="fa-regular fa-pen-to-square edit-produto"></i></td>
+            <td><i id=${produto.sku} value=${produto.produtoDescricao} class="fa-regular fa-pen-to-square edit-produto" onClick='sendProductHidden(this)'></i></td>
         </tr>        
         `
     ).join('');
@@ -998,6 +920,8 @@ function btnEditUser(el) {
     document.getElementById("name").value = user.user
     document.getElementById("password").value = user.password
     document.getElementById("re-password").value = user.password;
+    document.getElementById("hidden-update-user").value = userStr;
+
     let isAdm = (user.isAdmin === true) ? "admin" : "colaborador";
     // document.getElementById("nivel").value = "";
     // const option = select.querySelector('option[value="' + isAdm + '"]');
@@ -1009,21 +933,22 @@ async function delUser(el) {
     console.log("deletar");
     const userStr = el.querySelector("#hidden-user").value;
     const user = JSON.parse(userStr);
+
     if (!new confirmation(`Deseja realmente deletar o usuário ${user.user}`).result) return
 
     try {
         // voltar aqui user
-        const URL_USER_DELETE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/Delete`;
+        const URL_API_DEL = "api/delete-user";
         const dados = { user: user.user, password: user.password };
         const options = {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 'Accept': '*/*',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dados)
         }
-        await new GenerateFetch(URL_USER_DELETE, options);
+        await new GenerateFetch(URL_API_DEL, options);
         new resetarForm("form-user");
         effectPannel(`usuario ${user.user} deletado com sucesso!.`, "message-pannel-user", "user-title");
         await preencherTabUsers();
@@ -1035,9 +960,13 @@ async function editUser() {
 
     btnEditUser.addEventListener("click", async e => {
         e.preventDefault();
+        // vk ak
         const name = document.getElementById("name").value
         const password = document.getElementById("password").value
         const repassword = document.getElementById("re-password").value
+        let oldUser = document.getElementById("hidden-update-user").value;
+        oldUser = JSON.parse(oldUser);
+
         let admin = document.getElementById("nivel").value;
         console.log(admin)
         admin = (admin === "admin") ? true : false;
@@ -1052,17 +981,17 @@ async function editUser() {
 
         try {
             // voltar aqui user
-            const URL_USER_UPDATE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/newAdmin ${admin}`;
-            const dados = { user: name, password: password };
+            const URL_API_UPDATE_USER = "api/update-user";
+            const dados = { user: name, password: password, admin, oldUser: oldUser.user, oldPassword: oldUser.password };                       
             const options = {
-                method: 'PUT',
+                method: "POST",
                 headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json'
+                    "Accept": "*/*",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(dados)
             }
-            await new GenerateFetch(URL_USER_UPDATE, options);
+            await new GenerateFetch(URL_API_UPDATE_USER, options);
             new resetarForm("form-user");
             effectPannel(`usuario ${name} atualizado com sucesso!.`, "message-pannel", "user-title");
             await preencherTabUsers();
@@ -1083,5 +1012,11 @@ function onCloseWindow() {
         // localStorage.removeItem("user");
         // localStorage.removeItem("admin");
     })
+}
+function sendProductHidden(el) {
+    let sku = { sku: el.id };
+    sku = JSON.stringify(sku);
+    const hidden = document.getElementById("hidden-update-produto");
+    hidden.value = sku;
 }
 

@@ -18,9 +18,10 @@ class nodeFetch {
             const response = await fetch(this.url)
             if (!response.ok) throw new Error(response.statusText)
 
-            const contentType = response.headers.get("Content-Type");            
-            if (contentType.includes('application/json')) return await response.json();
-            if (contentType.includes('text/plan')) return await response.text();
+            const contentType = response.headers.get("Content-Type");     
+            if(contentType === null) return response.statusText;       
+            if (contentType.includes('application/json') && contentType.includes('application/json') !== null) return await response.json();
+            if (contentType.includes('text/plan') && contentType.includes('text/plan') !== null) return await response.text();
             return response.statusText;
         } catch (error) { throw error }
     }
@@ -29,9 +30,10 @@ class nodeFetch {
             const response = await fetch(this.url,this.options)
             if (!response.ok) throw new Error(response.statusText)
 
-            const contentType = response.headers.get("Content-Type");            
-            if (contentType.includes('application/json')) return await response.json();
-            if (contentType.includes('text/plan')) return await response.text();
+            const contentType = response.headers.get("Content-Type");    
+            if(contentType === null) return response.statusText;         
+            if (contentType.includes('application/json') && contentType.includes('application/json') !== null ) return await response.json();
+            if (contentType.includes('text/plan') && contentType.includes('text/plan') !== null) return await response.text();
             return response.statusText;
         } catch (error) { throw error }       
     }

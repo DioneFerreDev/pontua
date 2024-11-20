@@ -15,12 +15,11 @@ class GenerateFetch {
                     console.error('Erro ao fazer requisição:', error)
                     throw error;
                 });
-        } else {
-            console.log(URL, prop)
+        } else {            
             return fetch(URL, prop)
                 .then(res => {
                     if (returnJson) {
-                        console.log('Status da resposta:', res.status); return res.json()
+                        return res.json()
                             .then(result => result)                            
                     } else {                        
                         return res.status                            

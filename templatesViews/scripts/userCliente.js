@@ -1,7 +1,7 @@
 let pontos = 500;
 let ultCPF = "";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {    
     playUserHome();
 })
 
@@ -245,15 +245,13 @@ function shuffleItems(arrItems) {
     return shuffledItems;
 }
 async function drawRoleta() {
-    const audio = new Audio("../sounds/roleta.mp3");
-    const audioAplausos = new Audio("../sounds/aplausos.mp3");
+    const audio = new Audio("./sounds/roleta.mp3");
+    const audioAplausos = new Audio("./sounds/aplausos.mp3");
     const canvas = document.getElementById("canvas");
     // factor antigo 0.366
     const wFactor = 0.7;
     let size = (window.innerWidth * wFactor);
-    console.log(size);
     size = (size > 500) ? 500 : size;
-    console.log(size);
     const ctx = canvas.getContext("2d");
     canvas.width = size;
     canvas.height = size;
@@ -402,11 +400,8 @@ async function drawRoleta() {
             // definido vencedor 
             //usando confeti
 
-            winnerProduct = itemsoBJ.filter(it => it.produtoDescricao === winnerProduct)[0];
-            console.log(winnerProduct);
-            console.log(winnerProduct)
+            winnerProduct = itemsoBJ.filter(it => it.produtoDescricao === winnerProduct)[0];            
             registrarRoleta(ultCPF, winnerProduct);
-            console.log(winnerProduct, "fazer o cod no qual insere na roleta");
             document.querySelector(".triangle").style.transition = "transform 0.5s ease";
             document.querySelector(".triangle").style.transform = "rotate(0deg)";
 
@@ -719,9 +714,7 @@ function testeRoleta(el) {
 async function registrarRoleta(ultCPF, winnerProduct) {
     const pontosRoleta = 0;
     const pontosStr = document.getElementById("input-hidden-cliente").value;
-    let objCliente = JSON.parse(pontosStr);
-    console.log(pontosStr)
-
+    let objCliente = JSON.parse(pontosStr);    
     if (pontosStr === "" || pontosStr === null) return
     const pontosObj = JSON.parse(pontosStr);
     // if (pontosObj.totalPontos < pontosRoleta) {
@@ -730,12 +723,14 @@ async function registrarRoleta(ultCPF, winnerProduct) {
     // }
     // fazer a verificação aqui
     // aqui roleta
+    console.log(`os pontos da roleta foram ${pontosRoleta}`);
     try {
-        const URL_POST_ROLETA = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosRoleta ${pontosRoleta}`;
+        const URL_API_ROLETA = "api/cliente-roleta";      
         const dados = {
             cpf: ultCPF,
             sku: winnerProduct.sku,
-            produtoDescricao: winnerProduct.produtoDescricao
+            produtoDescricao: winnerProduct.produtoDescricao,
+            pontos:pontos
         }
         const options = {
             method: 'POST',
@@ -745,14 +740,15 @@ async function registrarRoleta(ultCPF, winnerProduct) {
             },
             body: JSON.stringify(dados)
         }
-        new GenerateFetch(URL_POST_ROLETA, options);
+        new GenerateFetch(URL_API_ROLETA, options);
     } catch (error) { console.log(error) }
 }
 async function puxarProdutos() {
     try {
-        const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll";
-        const produtos = await new GenerateFetch(URL_PRODUTOS);
-        arrProdutos = produtos;
+        const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";
+        // const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll";
+        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
+        // arrProdutos = produtos;
         return produtos
     } catch (error) { console.log(error) }
 }

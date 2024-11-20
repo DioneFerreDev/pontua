@@ -4,6 +4,7 @@
 - tirar o autocomplete dos input CPF OK
 - pegar empresa/redirect e fazer a api q vai retornar a tela cliente OK
 
+- mudar a lógica do upate produto, ou por input hidden ou n permiter mudança do sku
 - fazer a api para cada requisição no front escondendo as URLs reais
 - fazer a criptografia ao salvar adm ou colaborador e ao recuperar 
 descriptografar com bcrypt
@@ -11,3 +12,8 @@ descriptografar com bcrypt
 - em apiController setei na session um uuid provisório, depois voltar para arrumar
 - arrumar o upload do user pois o endpoint n está mais funcionando
 - arrumar o enviar pontos pois  esta dando cors
+- colocar efeito de loading a toda requisição
+- mexer na  tela do cliente userCliente
+- arrumar uma maneira de apenas lidar com as info 
+do cliente na api ao invés do front na tela do cliente
+- lembrar o ricardo de tbm passar os clientes e os users a terem empresaId

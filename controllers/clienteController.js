@@ -9,9 +9,7 @@ module.exports =
             const options = {
                 expiresIn: "1m"
             }
-            const token = jwt.sign({ cnpj: req.body.cnpj, nome: req.body.nome }, process.env.TOKEN_SECRET, options);
-            console.log('criei o cliente controller setar');
-            console.log(token)
+            const token = jwt.sign({ cnpj: req.body.cnpj, nome: req.body.nome }, process.env.TOKEN_SECRET, options);            
             res.cookie("authorization-token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -24,14 +22,12 @@ module.exports =
             res.status(401);
         }
     },
-    validarToken: async (req, res, next) => {
-        console.log('tentando validar no controller')
+    validarToken: async (req, res, next) => {        
         const token = req.cookies['authorization-cliente-token'];
         if (!token) return res.status(401).redirect("/unAuth");
 
         try {
-            const userVerified = await jwt.verify(token, process.env.TOKEN_SECRET);
-            console.log(userVerified);
+            const userVerified = await jwt.verify(token, process.env.TOKEN_SECRET);            
             next();
         } catch (error) {
             res.status(401).redirect("/unAunth");

@@ -54,10 +54,6 @@
                                     style="display: none;text-align: center;"></i>
                                 <div class="side-bar-full">ENVIAR PONTOS</div>
                             </li>
-                            <!-- <li id="client-screen"><i class="fa-solid fa-tablet-screen-button i-side-bar"
-                            style="display: none;text-align: center;"></i>
-                        <div class="side-bar-full">TELA TABLET</div>
-                    </li> -->
                             <li id="quit"><i class="fa-solid fa-right-from-bracket i-side-bar"
                                     style="display: none;text-align: center;"></i>
                                 <div class="side-bar-full">SAIR</div>
@@ -82,6 +78,7 @@
                         <div class="wrap-input half-flex">
                             <div>
                                 <input id="sku" type="number" required placeholder="Código do produto" />
+                                <input id="hidden-update-produto" type="hidden" value="" />
                             </div>
                             <div>
                                 <button id="salvar-produto" class="btn-enviar">Salvar</button>
@@ -108,28 +105,7 @@
             <div class="roleta-content contents-logged">
                 <div class="wrap-roleta-contents" style="width: 100%; height: 100%;">
                     <div class="list-roleta" style="width: 30%;">
-                        <ul id="ul-list-roleta" class="ul-list-roleta">
-                            <!-- <li>fritas</li>
-                            <li>coca cola</li>
-                            <li>fanta</li>
-                            <li>brahma 250ml</li>
-                            <li>sprite</li>
-                            <li>fritas</li>
-                            <li>coca cola</li>
-                            <li>fanta</li>
-                            <li>brahma 250ml</li>
-                            <li>sprite</li>
-                            <li>fritas</li>
-                            <li>coca cola</li>
-                            <li>fanta</li>
-                            <li>brahma 250ml</li>
-                            <li>sprite</li>
-                            <li>fritas</li>
-                            <li>coca cola</li>
-                            <li>fanta</li>
-                            <li>brahma 250ml</li>
-                            <li>sprite</li> -->
-                        </ul>
+                        <ul id="ul-list-roleta" class="ul-list-roleta"></ul>
                     </div>
 
                     <div class="painel-roleta" style="width: 70%;">
@@ -154,7 +130,6 @@
                                 <div class="on-off">
                                     <div class="btn-circle"></div>
                                 </div>
-                                <!-- <button id="adicionar" class="btn-adicionar">Procurar</button> -->
                             </div>
                         </div>
                     </form>
@@ -204,6 +179,7 @@
                                         <label>Confirme senha</label>
                                         <input id="re-password" type="password" name="re-password"
                                             placeholder="Confirmar senha" />
+                                        <input id="hidden-update-user" type="hidden" value="" />
                                     </div>
                                 </div>
                                 <div class="wrap-input">
@@ -274,7 +250,6 @@
 
     </section>
     <!--section-flex-->
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
@@ -293,9 +268,122 @@
 
                 document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
                 document.getElementById("usuarios").classList.add("choose")
-            })
+            });
+
+            function preencherTabClientes(clientes) {
+                clientes = clientes.map(cliente => {
+                    let isRoleta = cliente.isRoleta ? "SIM" : "NÃO";
+                    let produtoDescricao = cliente.produtoDescricao === null ? "" : cliente.produtoDescricao;
+
+                    return {
+                        cpf: cliente.cpf, data: cliente.data, nomeCliente: cliente.nomeCliente,
+                        pontos: cliente.pontos, produtoDescricao, isRoleta
+                    }
+                })
+                clientes = dateToRecent(clientes);
+                // repartindo a data em dia e hora
+                clientes = clientes.map(cliente => {
+                    const parts = cliente.data.split(/[\s]/);
+                    // cpf: cliente.cpf
+                    return {
+                        cpf: cliente.cpf, nomeCliente: (cliente.nomeCliente !== null) ? cliente.nomeCliente : "", dataDia: parts[0], dataHora: parts[1], pontos: cliente.pontos,
+                        produtoDescricao: cliente.produtoDescricao, isRoleta: cliente.isRoleta
+                    }
+                })
+
+                tbodyClientes = clientes.map(cliente => {
+
+                    const clienteStr = JSON.stringify(cliente);
+                    return `
+        <tr>
+            <td>###########</td>
+            <td>${cliente.nomeCliente}</td>
+            <td>${cliente.dataDia}</td>
+            <td>${cliente.dataHora}</td>
+            <td>${cliente.pontos}</td>
+            <td>${cliente.produtoDescricao}</td>
+            <td>${cliente.isRoleta}</td>
+            <td><input class="hidden-movimentation" value='${clienteStr}'  type="hidden" /><i id=${cliente.cpf} class="fa-solid fa-trash-can del-cliente" onclick="btnDel(this)"></i></td>
+        </tr>        
+        `
+                }).join('');
+
+                let tab =
+                    `<table>
+                <thead>                    
+                    <th>CPF</th>
+                    <th>NOME</th>
+                    <th>DIA</th>
+                    <th>HORA</th>
+                    <th>PONTOS</th>
+                    <th>PRODUTO</th>
+                    <th>ROLETA</th>
+                    <th>DEL</th>
+                </thead>
+                <tbody>${tbodyClientes}</tbody>
+            </table>
+    `
+                return tab
+            }
+
         </script>
-        <% } %>
+        <% }else{ %>
+            <script>
+                function preencherTabClientes(clientes) {
+                    clientes = clientes.map(cliente => {
+                        let isRoleta = cliente.isRoleta ? "SIM" : "NÃO";
+                        let produtoDescricao = cliente.produtoDescricao === null ? "" : cliente.produtoDescricao;
+
+                        return {
+                            cpf: cliente.cpf, data: cliente.data, nomeCliente: cliente.nomeCliente,
+                            pontos: cliente.pontos, produtoDescricao, isRoleta
+                        }
+                    })
+                    clientes = dateToRecent(clientes);
+                    // repartindo a data em dia e hora
+                    clientes = clientes.map(cliente => {
+                        const parts = cliente.data.split(/[\s]/);
+                        // cpf: cliente.cpf
+                        return {
+                            cpf: cliente.cpf, nomeCliente: (cliente.nomeCliente !== null) ? cliente.nomeCliente : "", dataDia: parts[0], dataHora: parts[1], pontos: cliente.pontos,
+                            produtoDescricao: cliente.produtoDescricao, isRoleta: cliente.isRoleta
+                        }
+                    })
+
+                    tbodyClientes = clientes.map(cliente => {
+
+                        const clienteStr = JSON.stringify(cliente);
+                        return `
+        <tr>
+            <td>###########</td>
+            <td>${cliente.nomeCliente}</td>
+            <td>${cliente.dataDia}</td>
+            <td>${cliente.dataHora}</td>
+            <td>${cliente.pontos}</td>
+            <td>${cliente.produtoDescricao}</td>
+            <td>${cliente.isRoleta}</td>            
+        </tr>        
+        `
+                    }).join('');
+
+                    let tab =
+                        `<table>
+                <thead>                    
+                    <th>CPF</th>
+                    <th>NOME</th>
+                    <th>DIA</th>
+                    <th>HORA</th>
+                    <th>PONTOS</th>
+                    <th>PRODUTO</th>
+                    <th>ROLETA</th>                    
+                </thead>
+                <tbody>${tbodyClientes}</tbody>
+            </table>
+    `
+                    return tab
+                }
+            </script>
+            <% } %>
 </body>
 
 </html>

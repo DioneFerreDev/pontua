@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    alert('testando')
     playHome();
 });
 
