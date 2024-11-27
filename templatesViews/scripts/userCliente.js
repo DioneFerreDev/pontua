@@ -1,7 +1,7 @@
 let pontos = 500;
 let ultCPF = "";
 
-document.addEventListener("DOMContentLoaded", () => {    
+document.addEventListener("DOMContentLoaded", () => {
     playUserHome();
 })
 
@@ -88,7 +88,7 @@ async function validarToken() {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
-                    'Authorization':`Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
@@ -133,11 +133,11 @@ function pontosProdutos() {
     const pannelprodutos = document.getElementById("pontos-produtos");
     pannelprodutos.addEventListener("click", async () => {
         try {
-            const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll"
-            const produtos = await new GenerateFetch(URL_PRODUTOS);
+            let produtos = await puxarProdutos();
+            if (produtos.expired) window.location.href = produtos.url;
+            console.log(produtos)
             buildList(produtos);
             // onclickListPontoProduto()
-            console.log(produtos)
             const overlayPontosProdutos = document.getElementById("pontos-produtos-overlay");
             overlayPontosProdutos.style.display = "flex";
         } catch (error) { console.log(error) }
@@ -266,6 +266,7 @@ async function drawRoleta() {
 
     // Puxando do back os produtos    
     let itemsoBJ = await puxarProdutos();
+    if (itemsoBJ.expired) window.location.href = itemsoBJ.url;
     itemsoBJ = itemsoBJ.filter(it => it.isRoleta);
     let items = itemsoBJ.map(it => it.produtoDescricao);
     items = shuffleItems(items);
@@ -400,7 +401,7 @@ async function drawRoleta() {
             // definido vencedor 
             //usando confeti
 
-            winnerProduct = itemsoBJ.filter(it => it.produtoDescricao === winnerProduct)[0];            
+            winnerProduct = itemsoBJ.filter(it => it.produtoDescricao === winnerProduct)[0];
             registrarRoleta(ultCPF, winnerProduct);
             document.querySelector(".triangle").style.transition = "transform 0.5s ease";
             document.querySelector(".triangle").style.transform = "rotate(0deg)";
@@ -709,12 +710,12 @@ async function drawRoleta() {
 //     });
 // }
 function testeRoleta(el) {
-    
+
 }
 async function registrarRoleta(ultCPF, winnerProduct) {
     const pontosRoleta = 0;
     const pontosStr = document.getElementById("input-hidden-cliente").value;
-    let objCliente = JSON.parse(pontosStr);    
+    let objCliente = JSON.parse(pontosStr);
     if (pontosStr === "" || pontosStr === null) return
     const pontosObj = JSON.parse(pontosStr);
     // if (pontosObj.totalPontos < pontosRoleta) {
@@ -725,12 +726,12 @@ async function registrarRoleta(ultCPF, winnerProduct) {
     // aqui roleta
     console.log(`os pontos da roleta foram ${pontosRoleta}`);
     try {
-        const URL_API_ROLETA = "api/cliente-roleta";      
+        const URL_API_ROLETA = "api/cliente-roleta";
         const dados = {
             cpf: ultCPF,
             sku: winnerProduct.sku,
             produtoDescricao: winnerProduct.produtoDescricao,
-            pontos:pontos
+            pontos: pontos
         }
         const options = {
             method: 'POST',
@@ -746,61 +747,10 @@ async function registrarRoleta(ultCPF, winnerProduct) {
 async function puxarProdutos() {
     try {
         const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";
-        // const URL_PRODUTOS = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/ListAll";
         const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
-        // arrProdutos = produtos;
         return produtos
     } catch (error) { console.log(error) }
 }
-function login() {
-    const login = document.getElementById("login");
-    const entrar = document.getElementById("entrar");
-
-
-    // voltar aqui para inserir no home
-    // login.addEventListener("click", () => {
-    //     let overlay = document.getElementById("overlay");
-    //     overlay.style.display = "flex";
-    // })
-    const circleX = document.querySelector(".circle-x");
-
-    circleX.addEventListener("click", () => {
-        let overlay = document.getElementById("overlay");
-        overlay.style.display = "none";
-    })
-
-    entrar.addEventListener("click", async e => {
-        e.preventDefault();
-        const user = document.getElementById("user").value;
-        const password = document.getElementById("password").value;
-
-        try {
-            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ClienteLogin?user=${user}&password=${password}`;
-            const admin = await new GenerateFetch(URL);
-            const pannel = document.querySelector(".message-pannel");
-
-            if (admin.status === 404) {
-                pannel.innerHTML = "Admin não encontrado";
-                pannel.style.opacity = 1;
-            } else if (admin.status === 400) {
-                pannel.innerHTML = "Um ou mais campos não preenchido(s)!";
-                pannel.style.opacity = 1
-            } else {
-                console.log("fazer o redirecionamento")
-                // fazer aqui o token do do admin tipo localstorage
-                // provisoriamente com localstorage, mas conversar para fazer com jwt
-                localStorage.setItem("admin", true);
-                localStorage.setItem("user", admin.user)
-
-
-                window.location.href = "./pages/admin.html";
-            }
-
-        } catch (error) { console.log(error) }
-
-    })
-}
-
 function TestaCPF(strCPF) {
     var Soma;
     var Resto;
@@ -848,32 +798,41 @@ function onInserir() {
     })
 }
 async function inserirAlterarCPF(cpf) {
+    const data = cpf;
+    console.log(data)
     try {
-        const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`
-        // const URL = `http://192.168.0.103:5000/Cliente/${cpf}`
-        const cliente = await new GenerateFetch(URL);
+        const URL_API_CPF = "api/cliente-CPF";
+        const options = {
+            method: "POST",
+            headers: {
+                "Accept": "*/*",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cpf: data })
+        }
+        const cliente = await new GenerateFetch(URL_API_CPF, options, true);        
+        if (cliente.expired) window.location.href = cliente.url        
 
-        if (cliente.length === 0) {
-            // cadastrar novo cpf com os pontos ganhos
-            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+        if (cliente.length === 0) {            
+            // cadastrar novo cpf com os pontos ganhos            
+            const URL_API_CLIENTE_CREATE = "api/cliente-create";
             const dados = {
                 cpf,
                 data: new calendario().time
             }
 
-            const prop = {
+            const options = {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                     'Accept': '*/*',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(dados)
             }
-            await new GenerateFetch(URLPOST, prop);
-            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`
-            let clienteCadastrado = await new GenerateFetch(URL);
+            let clienteCadastrado = await new GenerateFetch(URL_API_CLIENTE_CREATE, options, true);
+            // let clienteCadastrado = await new GenerateFetch(URL);
             console.log("cliente cadastrado pela a primeira vez");
+            console.log(clienteCadastrado)
 
             let pontosInseridos = 0;
             let totalPontos = 0;
@@ -900,8 +859,9 @@ async function inserirAlterarCPF(cpf) {
             let pontos = document.getElementById("input-hidden-cliente").value;
 
         } else {
-            // recuperar o cliente do cpf e adicionar os pontos ganhos
-            const URLUPDATE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+            // recuperar o cliente do cpf e adicionar os pontos ganhos    
+            console.log('cpf ja cadastrado, ent recupera-lo e adicionar mais pontos');
+            const URLUPDATE = `api/cliente-create`;
             const dados = {
                 cpf: cliente[0].cpf,
                 data: new calendario().time,
@@ -913,16 +873,28 @@ async function inserirAlterarCPF(cpf) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(dados)
-            }
+            }            
             let clientePontos = await new GenerateFetch(URLUPDATE, prop, true);
+            console.log('clientes pontos é');            
+            console.log(clientePontos)
             let pontosInseridos = 0;
             let totalPontos = 0;
-            if (clientePontos.status === 400) {
-                const URL_GET_CLIENTE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cliente[0].cpf}`;
-                clientePontos = await new GenerateFetch(URL_GET_CLIENTE);
+            // if (clientePontos.status === 400) {
+                const URL_API_CLIENTE_BUSCAR = "api/cliente-CPF";
+                const optionsCliente = {
+                    method: "POST",
+                    headers: {
+                        "Accept": "*/*",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ cpf: cliente[0].cpf })
+                }                
+                clientePontos = await new GenerateFetch(URL_API_CLIENTE_BUSCAR, optionsCliente, true);     
+                console.log('buscou o cliente');
+                console.log(clientePontos)           
                 clientePontos.forEach(cliente => totalPontos += cliente.pontos);
                 clientePontos = { totalPontos, pontosInseridos }
-            }
+            // }
 
             /// caso deu 400 liberar para jogar ou trocar por produtos
             // if (clientePontos.status === 400) return                        

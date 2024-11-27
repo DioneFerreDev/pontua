@@ -9,7 +9,7 @@ module.exports =
             const options = {
                 expiresIn: "1m"
             }
-            const token = jwt.sign({ cnpj: req.body.cnpj, nome: req.body.nome }, process.env.TOKEN_SECRET, options);            
+            const token = jwt.sign({ cnpj: req.body.cnpj, nome: req.body.nome }, process.env.TOKEN_SECRET, options);
             res.cookie("authorization-token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -22,15 +22,15 @@ module.exports =
             res.status(401);
         }
     },
-    validarToken: async (req, res, next) => {        
+    validarToken: async (req, res, next) => {
         const token = req.cookies['authorization-cliente-token'];
         if (!token) return res.status(401).redirect("/unAuth");
 
         try {
-            const userVerified = await jwt.verify(token, process.env.TOKEN_SECRET);            
+            const userVerified = await jwt.verify(token, process.env.TOKEN_SECRET);
             next();
         } catch (error) {
-            res.status(401).redirect("/unAunth");
+            res.status(401).send({ expired: true, url: "/unAuth" });
         }
     }
 

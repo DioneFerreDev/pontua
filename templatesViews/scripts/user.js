@@ -1,7 +1,7 @@
 
 let arrProdutos = [];
 let produtoSelected = null;
-document.addEventListener("DOMContentLoaded", () => {    
+document.addEventListener("DOMContentLoaded", () => {
     managerFunction();
 });
 
@@ -51,32 +51,11 @@ async function sendPoints() {
         await new GenerateFetch(URL_API_SEND_API, options);
     } catch (error) { console.log(error) }
 }
-// async function validationUser() {
-//     // fazer aqui provavelmente uma nova rota para deslogar
-//     try {
-//         const URL_ADM = "/adm/authEmpresa/validarToken";
-//         const validate_options = {
-//             method: 'GET',
-//             credentials: 'include',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'application/json'
-//             }
-//         }
-//         const isLogged = await new GenerateFetch(URL_ADM, validate_options);
-//         console.log(isLogged);
-
-//     } catch (error) {
-//         console.log(error)
-//     }
-
-//     // window.location.href = "/";
-// }
 function quit() {
     document.getElementById("quit").addEventListener("click", async e => {
         const isQuit = new confirmation("Deseja realmente sair do Painel de usuários?");
         if (isQuit.result) {
-            // fazer aqui a remoção do token            
+            // fazer aqui a remoção do token                        
             const data = await new GenerateFetch("api/logout");
             if (data.logout)
                 window.location.href = "/";
@@ -93,7 +72,7 @@ function logUser() {
     const salvar = document.getElementById("salvar-user");
     salvar.addEventListener("click", async e => {
         e.preventDefault();
-
+        overlays("content-preload");
         const senha = $('#password').val();
         const nome = document.getElementById("name").value;
         const resenha = document.getElementById("re-password").value;
@@ -159,6 +138,7 @@ function logUser() {
                 const URL_API_USER = "/api/create-user";
                 await new GenerateFetch(URL_API_USER, options);
                 new resetarForm("form-user");
+                overlays("content-preload", true);
                 effectPannel(`usuario ${nome} registrado com sucesso!.`, "message-pannel", "user-title");
                 await preencherTabUsers();
             } catch (error) { console.log(error) }
@@ -171,10 +151,19 @@ function logUser() {
 function buscarUsers() {
     console.log("ter q programar ainda")
 }
-function touchList() {    
+function overlays(idOverlay, desapear = null) {
+    const overlays = document.querySelectorAll(".overlay-preload");
+    overlays.forEach(overlay => overlay.style.display = "none");
+    if (desapear) return
+
+    const chooseOverlay = document.getElementById(idOverlay);
+    chooseOverlay.style.display = "block";
+}
+function touchList() {
     document.getElementById("produtos").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
+        overlays("content-preload");
         document.querySelector(".produtos-content").style.display = "flex";
 
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
@@ -184,6 +173,7 @@ function touchList() {
             // puxar os produtos e atualizar a tabela pela primeira vez
             const produtos = await puxarProdutos();
             document.querySelector(".wrap-table-produtos").innerHTML = preencherTabProdutos(produtos);
+            overlays("content-preload", true);
             btnDelProduto();
             btnEditlProduto()
             btnAtualisarProduto();
@@ -195,22 +185,13 @@ function touchList() {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
         document.querySelector(".send-content").style.display = "flex";
-
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("send").classList.add("choose")
     })
-    // document.getElementById("usuarios").addEventListener("click", async e => {
-    //     let contents = document.querySelectorAll(".contents-logged");
-    //     contents.forEach(content => content.style.display = "none");
-    //     document.querySelector(".users-content").style.display = "flex";
-    //     await preencherTabUsers();
-
-    //     document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
-    //     document.getElementById("usuarios").classList.add("choose")
-    // })
     document.getElementById("pontos-produtos").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
+        overlays("content-preload");
         document.querySelector(".ponto-produto").style.display = "flex";
 
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
@@ -220,22 +201,19 @@ function touchList() {
             const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos";
             const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
             buildList(produtos);
+            overlays("content-preload", true);
             onclickListPontoProduto()
         } catch (error) { console.log(error) }
 
     })
-    // document.getElementById("pontos").addEventListener("click", () => {
-    //     let contents = document.querySelectorAll(".contents-logged");
-    //     contents.forEach(content => content.style.display = "none");
-    //     document.querySelector(".pontos-content").style.display = "flex";
-    // })
     document.getElementById("roleta").addEventListener("click", printarPainelRoleta)
-    document.getElementById("clientes").addEventListener("click", e => {
+    document.getElementById("clientes").addEventListener("click", async e => {
         let contents = document.querySelectorAll(".contents-logged");
         contents.forEach(content => content.style.display = "none");
+        overlays("content-preload")
         document.querySelector(".clientes-content").style.display = "flex";
-        telaClientes();
-
+        await telaClientes();
+        overlays("content-preload", true);
         document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
         document.getElementById("clientes").classList.add("choose")
     })
@@ -273,7 +251,7 @@ async function onTrocar() {
 
     btnTrocar.addEventListener("click", async e => {
         e.preventDefault();
-
+        overlays('content-preload');
         let ultCPF = document.getElementById("cliente-cpf").value;
         ultCPF = ultCPF.replace(/[\D+]/g, ''); // \D+ (todo valor não numérico)
         // ultCPF = ultCPF.replace(/[.-]/g,'');        
@@ -286,11 +264,7 @@ async function onTrocar() {
         if (produtoStr === "" || produtoStr === null) return
         const obj = JSON.parse(produtoStr);
 
-        // fazer a busca do cliente
-
-        // let cliente = document.getElementById("input-hidden-cliente").value;
         try {
-            // vk
             const URL_CLIENTE = "api/cliente";
             const info = { cpf: ultCPF };
             const optionsCliente = {
@@ -304,6 +278,7 @@ async function onTrocar() {
             let hisCliente = await new GenerateFetch(URL_CLIENTE, optionsCliente, true);
             if (hisCliente.length === 0) {
                 alert(`Cliente de CPF ${ultCPF} não cadastrado!!!`);
+                await overlays('content-preload', true);
                 return
             }
             // fazer a verificação do nome aqui
@@ -343,7 +318,7 @@ async function onTrocar() {
                 },
                 body: JSON.stringify(dados)
             }
-            new GenerateFetch(URL_API_TROCA, options)
+            await new GenerateFetch(URL_API_TROCA, options)
         } catch (error) { console.log(error) }
 
         // fazer a animação da messagem
@@ -352,6 +327,7 @@ async function onTrocar() {
         msg.innerHTML = "Pontos trocados com Sucesso!!!";
 
         pannelMessage.style.opacity = 1;
+        overlays('content-preload', true);
         new resetarForm("form-pontos-produtos");
         setTimeout(() => {
             pannelMessage.style.opacity = 0;
@@ -532,13 +508,15 @@ function btnDel(e) {
 function btnDelProduto() {
     const btnDel = document.querySelectorAll(".del-produto");
     btnDel.forEach(btn => {
-        btn.addEventListener("click", e => {
+        btn.addEventListener("click", async e => {
+            overlays("content-preload");
             const id = e.target.id
             const produto = arrProdutos.filter(pr => pr.sku === e.target.id)
             const descricao = produto[0].produtoDescricao
             const isDel = new confirmation(`Deseja realmente deletar ${descricao}? Os dados serão permanentemente perdidos.`);
-            if (isDel.result) deletarProduto(id, descricao);
+            if (isDel.result) await deletarProduto(id, descricao);
             new resetarForm("manage-produto");
+            overlays("content-preload", true);
         });
     });
 }
@@ -584,8 +562,8 @@ async function deletarProduto(sku, descricao) {
 async function deletarCliente(cpf, data) {
 
     try {
-        const URL_API_DEL_USER = "api/delete-Cliente";        
-        const dados = { cpf, data }                
+        const URL_API_DEL_USER = "api/delete-Cliente";
+        const dados = { cpf, data }
         const options = {
             method: 'POST',
             headers: {
@@ -615,6 +593,7 @@ async function btnSalvarProduto() {
 
     salvar.addEventListener("click", async e => {
         e.preventDefault();
+        overlays("content-preload");
         const produto = document.getElementById("produto").value;
         let pontos = document.getElementById("pontos-produto").value
         pontos = Number(pontos)
@@ -635,6 +614,7 @@ async function btnSalvarProduto() {
                 body: JSON.stringify(dados)
             }
             await new GenerateFetch(URL_SAVE_PRODUTO, options);
+            overlays("content-preload", true);
             new resetarForm("manage-produto")
 
             // puxar todos produtos e atualizar
@@ -652,6 +632,7 @@ function btnAtualisarProduto() {
     // mudar a lógica
     salvar.addEventListener("click", async e => {
         e.preventDefault();
+        overlays("content-preload");
         const produto = document.getElementById("produto").value;
         let pontos = document.getElementById("pontos-produto").value
         pontos = Number(pontos)
@@ -663,7 +644,6 @@ function btnAtualisarProduto() {
         if (produto === "" && pontos === 0 && sku === "" || pontos === "") return
         const data = new calendario().time;
         const dadosProduto = arrProdutos.filter(pr => pr.sku === sku)[0];
-        console.log(dadosProduto)
 
         try {
             const URO_API_UPDATE_PRODUTO = "api/update-produto";
@@ -676,7 +656,7 @@ function btnAtualisarProduto() {
                 body: JSON.stringify({ sku, produtoDescricao: produto, data, pontos, isRoleta: dadosProduto.isRoleta })
             }
             await new GenerateFetch(URO_API_UPDATE_PRODUTO, options);
-            console.log('agora é resetar e atualizar')
+            overlays("content-preload", true);
             new resetarForm("manage-produto");
             hidden.value = "";
             document.getElementById("atualisar-produto").style.display = "none";
@@ -930,12 +910,11 @@ function btnEditUser(el) {
 
 }
 async function delUser(el) {
-    console.log("deletar");
     const userStr = el.querySelector("#hidden-user").value;
     const user = JSON.parse(userStr);
-
     if (!new confirmation(`Deseja realmente deletar o usuário ${user.user}`).result) return
 
+    overlays("content-preload");
     try {
         // voltar aqui user
         const URL_API_DEL = "api/delete-user";
@@ -950,6 +929,7 @@ async function delUser(el) {
         }
         await new GenerateFetch(URL_API_DEL, options);
         new resetarForm("form-user");
+        overlays('content-preload', true);
         effectPannel(`usuario ${user.user} deletado com sucesso!.`, "message-pannel-user", "user-title");
         await preencherTabUsers();
     } catch (error) { console.log(error) }
@@ -960,7 +940,7 @@ async function editUser() {
 
     btnEditUser.addEventListener("click", async e => {
         e.preventDefault();
-        // vk ak
+        overlays("content-preload");
         const name = document.getElementById("name").value
         const password = document.getElementById("password").value
         const repassword = document.getElementById("re-password").value
@@ -982,7 +962,7 @@ async function editUser() {
         try {
             // voltar aqui user
             const URL_API_UPDATE_USER = "api/update-user";
-            const dados = { user: name, password: password, admin, oldUser: oldUser.user, oldPassword: oldUser.password };                       
+            const dados = { user: name, password: password, admin, oldUser: oldUser.user, oldPassword: oldUser.password };
             const options = {
                 method: "POST",
                 headers: {
@@ -993,6 +973,7 @@ async function editUser() {
             }
             await new GenerateFetch(URL_API_UPDATE_USER, options);
             new resetarForm("form-user");
+            overlays("content-preload", true);
             effectPannel(`usuario ${name} atualizado com sucesso!.`, "message-pannel", "user-title");
             await preencherTabUsers();
 

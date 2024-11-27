@@ -9,6 +9,7 @@ router.get("/logout", apiController.logout);
 router.get("/Empresa/Redirect", apiController.setarTokenCliente);
 router.get("/puxar-produtos", authPannel, apiController.puxarProdutos);
 router.get("/puxar-produtos-cliente", authCliente.validarToken, apiController.puxarProdutos);
+router.get("/puxar-produtos-cliente", authCliente.validarToken, apiController.puxarProdutos);
 router.get("/all-clientes", authPannel, apiController.allClientes);
 router.get("/all-users", authPannel, apiController.allUsers);
 router.post("/login", apiController.login);
@@ -23,7 +24,10 @@ router.post("/delete-produto", authPannel, apiController.deleteProduto);
 router.post("/update-produto", authPannel, apiController.updateProduto);
 router.post("/delete-user", authPannel, apiController.deleteUser);
 router.post("/update-user", authPannel, apiController.updateUser);
-router.post("/delete-cliente",authPannel,apiController.deleteCliente);
+router.post("/delete-cliente", authPannel, apiController.deleteCliente);
+router.post("/update-roleta", authPannel, apiController.updateRoleta);
+router.post("/cliente-CPF", authCliente.validarToken, apiController.clienteCPF);
+router.get("/cliente-create",authCliente.validarToken, apiController.createCliente);
 
 
 

@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/style.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/preload.css" />
     <link rel="stylesheet" type="text/css" href="../styles/logged.css" />
     <link rel="stylesheet" type="text/css" href="../styles/adm-roleta.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
@@ -63,6 +64,27 @@
             <!--wrap-ul-admin-->
         </section>
         <section class="body-logged-section">
+            <div id="content-preload" class="overlay-preload">
+                <h1>Cooking in Progress</h1>
+    
+                <div id="cooking">
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div id="area">
+                        <div id="sides">
+                            <div id="pan"></div>
+                            <div id="handle"></div>
+                        </div>
+                        <div id="pancake">
+                            <div id="pastry"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="produtos-content contents-logged">
                 <div class="wrap-content-clientes">
@@ -262,9 +284,11 @@
         <script>
             document.getElementById("usuarios").addEventListener("click", async e => {
                 let contents = document.querySelectorAll(".contents-logged");
-                contents.forEach(content => content.style.display = "none");
+                overlays("content-preload");
+                contents.forEach(content => content.style.display = "none");                
                 document.querySelector(".users-content").style.display = "flex";
                 await preencherTabUsers();
+                overlays("content-preload", true);
 
                 document.querySelectorAll("li").forEach(el => el.classList.remove("choose"))
                 document.getElementById("usuarios").classList.add("choose")

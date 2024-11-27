@@ -1,4 +1,5 @@
-function printarPainelRoleta(e) {
+async function printarPainelRoleta(e) {
+    overlays("content-preload");
     let contents = document.querySelectorAll(".contents-logged");
     contents.forEach(content => content.style.display = "none");
     document.querySelector(".roleta-content").style.display = "block";
@@ -11,9 +12,10 @@ function printarPainelRoleta(e) {
     const ul = document.querySelector(".roleta-content");
     ul.style.height = `${height - descHeight}px`;
     // puxar os produtos e adicionar na lista
-    adicionarListaProdutos();
-    buscarMathProdutos();
-    drawRoleta();
+    await adicionarListaProdutos();
+    await buscarMathProdutos();
+    await drawRoleta();
+    overlays("content-preload", true);
 }
 async function adicionarListaProdutos(isMatch = null) {
     let ul = document.getElementById("ul-list-roleta");
@@ -48,6 +50,7 @@ function touchListRoleta(produtos) {
             const produto = produtos.filter(pr => pr.sku === sku && pr.produtoDescricao === descricao)[0]
             produtoSelected = produto;
             const inputProduto = document.getElementById("select-produto");
+            if (produto === undefined) return
             inputProduto.value = produto.produtoDescricao;
             btnOnOff()
         })
@@ -57,6 +60,7 @@ async function actionBtnOnOff() {
     const btn = document.querySelector(".btn-circle");
 
     btn.addEventListener("click", async e => {
+        overlays("content-preload");
         if (produtoSelected === null) return
         let produto = produtoSelected;
         let isRoleta = produto.isRoleta;
@@ -80,8 +84,8 @@ async function actionBtnOnOff() {
         }
         isRoleta = !isRoleta
         produtoSelected.isRoleta = isRoleta;
-        console.log(`fazer o contrário dessa operação ${isRoleta}`)
         await atualizarRoleta()
+        overlays("content-preload", true);
     })
 }
 async function btnOnOff() {
@@ -117,21 +121,19 @@ async function atualizarRoleta() {
         produtoDescricao: produto.produtoDescricao,
         data: new calendario().time,
         pontos: produto.pontos,
-        isRoleta,
-        empresaId:"<%= empresaId %>"
+        isRoleta
     }
-    console.log(produto)
-    console.log(produtoAtualizado)
-    const URL_ATUALIZAR_PRODUTO = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Update";
+    const URL_API_ROLETA = "api/update-roleta";
     const options = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            "Accept": "*/*",
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(produtoAtualizado)
     }
     try {
-        await new GenerateFetch(URL_ATUALIZAR_PRODUTO, options);
+        await new GenerateFetch(URL_API_ROLETA, options);
         restorePainel()
     } catch (error) { console.log(error) }
 }
@@ -152,7 +154,6 @@ function buscarMathProdutos() {
     document.getElementById("select-produto").addEventListener("keyup", e => {
         const match = e.target.value;
         const newList = arrProdutos.filter(produto => produto.produtoDescricao.toLowerCase().includes(match.toLowerCase()));
-        console.log(newList);
         adicionarListaProdutos(newList)
     })
 }

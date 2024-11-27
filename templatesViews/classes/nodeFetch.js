@@ -15,6 +15,8 @@ class nodeFetch {
     
     async simpleFetch() {
         try {
+            console.log('essa é a url');
+            console.log(this.url)
             const response = await fetch(this.url)
             if (!response.ok) throw new Error(response.statusText)
 

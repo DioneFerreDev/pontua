@@ -4,7 +4,10 @@
 - tirar o autocomplete dos input CPF OK
 - pegar empresa/redirect e fazer a api q vai retornar a tela cliente OK
 
-- mudar a lógica do upate produto, ou por input hidden ou n permiter mudança do sku
+- arrumar ao inserir ganho de produto na roleta a hora Cliente/PontosRoleta {pontosroleta}
+- após arrumar o inserir novo cliente voltar na tela adm para conferir a troca caso n tenha o nome
+- importar a fonte dentro do projeto fisicamente
+- mudar a lógica do upate produto, ou por input hidden ou n permiter mudança do sku OK
 - fazer a api para cada requisição no front escondendo as URLs reais
 - fazer a criptografia ao salvar adm ou colaborador e ao recuperar 
 descriptografar com bcrypt

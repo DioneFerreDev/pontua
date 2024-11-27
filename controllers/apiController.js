@@ -169,7 +169,7 @@ module.exports =
                     "Accept": "*/*",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ cpf, sku, produtoDescricao, produtos, empresaId })
+                body: JSON.stringify({ cpf, sku, produtoDescricao, empresaId })
             }
             await new nodeFetch(URL, options).manageFetch();
             res.status(200).send("OK");
@@ -261,11 +261,6 @@ module.exports =
         const data = req.body;
         const password = data.oldPassword;
         const user = data.oldUser;
-        console.log('ons antigos são')
-        console.log(user, password);
-        console.log('e a data é')
-        console.log(data)
-
         const URL_USER_UPDATE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/UserLogin/updateUser ${user},${password}`;
         const options = {
             method: 'PUT',
@@ -297,5 +292,131 @@ module.exports =
             await new nodeFetch(URL_DEL, options).manageFetch();
             res.status(200).send({ response: "OK" });
         } catch (error) { console.log(error); res.send({}) }
+    },
+    updateRoleta: async (req, res) => {
+        let data = req.body;
+        data.empresaId = req.session.uuid;
+        const URL_ATUALIZAR_PRODUTO = "https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/ProdutoPontos/Update";
+        const options = {
+            method: 'PUT',
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }
+        try {
+            await new nodeFetch(URL_ATUALIZAR_PRODUTO, options).manageFetch();
+            res.status(200).send({ response: "OK" });
+        } catch (error) { console.log(error); res.send({}) }
+    },
+    clienteCPF: async (req, res) => {
+        const data = req.body;
+
+        try {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+            await new nodeFetch(URLPOST, options).manageFetch();
+            // fazer aqui a recuperação do cliente e devolver
+            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
+            const cliente = await new nodeFetch(URL).manageFetch();
+            // fazer a somatoria de pontos e devolver ao front
+            let pontosInseridos = 0;
+            let totalPontos = 0;
+            cliente.forEach((cl, i) => {
+                totalPontos += cl.pontos;
+                if(i === cliente.length-1){                    
+                    if(cl.isRoleta === false && cl.produtoDescricao === null){
+                        pontosInseridos = cl.pontos
+                    }
+                }
+            });
+            let clientePontos =
+            {
+                nomeCliente: cliente[cliente.length - 1].nomeCliente,
+                totalPontos, pontosInseridos, cliente
+            }
+            return res.status(200).send(clientePontos)
+        } catch (error) {
+            // caso n enviou pontos tentar recuperar
+            console.log(error)
+            console.log(data)
+            console.log('n enviado pontos')
+        }
+        try {
+            console.log('chegou para tentar recuperar o cliente')
+            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
+            const cliente = await new nodeFetch(URL).manageFetch();
+            let pontosInseridos = 0;
+            let totalPontos = 0;
+            cliente.forEach((cl, i) => {
+                totalPontos += cl.pontos;
+                if(i === cliente.length-1){
+                    if(cl.isRoleta === false && cl.produtoDescricao === null){
+                        pontosInseridos = cl.pontos
+                    }
+                }
+            });
+
+            let clientePontos =
+            {
+                nomeCliente: cliente[cliente.length - 1].nomeCliente,
+                totalPontos, pontosInseridos
+            }
+            return res.status(200).send(clientePontos)
+        } catch (error) {
+            console.log(error)
+            console.log('cliente n existente')
+            res.status(404).send([])
+        }
+
+    },
+    createCliente: async (req, res) => {
+        const cpf = req.query.cpf;
+        const data = req.query.data;
+        const dados = { cpf, data };
+        console.log(dados)
+        try {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            }
+            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+            await new nodeFetch(URLPOST, options).manageFetch();
+            // pegar o cliente cadastrado
+            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${dados.cpf}`
+            const cliente = await new nodeFetch(URL).manageFetch();
+            // fazer a somatoria de pontos e devolver ao front
+            let pontosInseridos = 0;
+            let totalPontos = 0;
+            cliente.forEach((cl, i) => {
+                totalPontos += cl.pontos;
+                if(i === cliente.length-1){
+                    if(cl.isRoleta === false && cl.produtoDescricao === null){
+                        pontosInseridos = cl.pontos
+                    }
+                }
+            });
+            let clientePontos =
+            {
+                nomeCliente: cliente[cliente.length - 1].nomeCliente,
+                totalPontos, pontosInseridos
+            }
+            res.status(200).send(clientePontos);
+            // fazer o redirect para apenas pegar o historico do cliente
+        } catch (error) { console.log(error); res.status(200).send(clientePontos) }
+      
     }
+
 }
