@@ -160,7 +160,9 @@ module.exports =
             const produtoDescricao = req.body.produtoDescricao;
             const produtos = req.body.produtos;
             let pontosRoleta = req.body.pontos;
-            const empresaId = req.session.uuid;
+            // const empresaId = req.session.uuid;
+            // resolver o problema do id pois estou passando manualmente            
+            const empresaId = "804dcf6c-aa27-4a30-89d6-661574c29c58";
             pontosRoleta = 0;
             console.log('chegou em pontos roleta com valores de ')
             console.log(cpf, sku, produtoDescricao, empresaId)
