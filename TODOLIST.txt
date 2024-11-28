@@ -4,19 +4,20 @@
 - tirar o autocomplete dos input CPF OK
 - pegar empresa/redirect e fazer a api q vai retornar a tela cliente OK
 
-- arrumar ao inserir ganho de produto na roleta a hora Cliente/PontosRoleta {pontosroleta}
-- após arrumar o inserir novo cliente voltar na tela adm para conferir a troca caso n tenha o nome
-- importar a fonte dentro do projeto fisicamente
+- resolver os problemas dos empresasid
+- arrumar ao inserir ganho de produto na roleta a hora Cliente/PontosRoleta {pontosroleta} OK
+- após arrumar o inserir novo cliente voltar na tela adm para conferir a troca caso n tenha o nome OK
+- importar a fonte dentro do projeto fisicamente OK
 - mudar a lógica do upate produto, ou por input hidden ou n permiter mudança do sku OK
-- fazer a api para cada requisição no front escondendo as URLs reais
+- fazer a api para cada requisição no front escondendo as URLs reais OK
 - fazer a criptografia ao salvar adm ou colaborador e ao recuperar 
 descriptografar com bcrypt
-- depois de pronto, retirar todas as funções comentadas
+- depois de pronto, retirar todas as funções comentadas 
 - em apiController setei na session um uuid provisório, depois voltar para arrumar
-- arrumar o upload do user pois o endpoint n está mais funcionando
-- arrumar o enviar pontos pois  esta dando cors
-- colocar efeito de loading a toda requisição
-- mexer na  tela do cliente userCliente
+- arrumar o upload do user pois o endpoint n está mais funcionando OK
+- arrumar o enviar pontos pois  esta dando cors OK
+- colocar efeito de loading a toda requisição OK
+- mexer na  tela do cliente userCliente OK
 - arrumar uma maneira de apenas lidar com as info 
-do cliente na api ao invés do front na tela do cliente
+do cliente na api ao invés do front na tela do cliente OK
 - lembrar o ricardo de tbm passar os clientes e os users a terem empresaId

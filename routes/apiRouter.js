@@ -27,7 +27,7 @@ router.post("/update-user", authPannel, apiController.updateUser);
 router.post("/delete-cliente", authPannel, apiController.deleteCliente);
 router.post("/update-roleta", authPannel, apiController.updateRoleta);
 router.post("/cliente-CPF", authCliente.validarToken, apiController.clienteCPF);
-router.get("/cliente-create",authCliente.validarToken, apiController.createCliente);
+// router.get("/cliente-create",authCliente.validarToken, apiController.createCliente);
 
 
 

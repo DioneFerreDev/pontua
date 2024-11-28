@@ -294,18 +294,18 @@ async function drawRoleta() {
                 jsConfetti.addConfetti()
                 if (times === 5) {
                     // fazer simulação de print
-                    html2canvas(document.body).then(canvas => {
-                        // Criar link para download
-                        const link = document.createElement("a");
-                        link.download = "premio.png";
-                        link.href = canvas.toDataURL("image/png");
+                    // html2canvas(document.body).then(canvas => {
+                    //     // Criar link para download
+                    //     const link = document.createElement("a");
+                    //     link.download = "premio.png";
+                    //     link.href = canvas.toDataURL("image/png");
 
-                        setTimeout(() => {
-                            if (new confirmation("Gostaria de compartilhar seu prêmio nas suas redes sociais?").result) {
-                                link.click();
-                            }
-                        }, 2500);
-                    }).catch(err => { console.error("Erro ao capturar a página:", err) });
+                    //     setTimeout(() => {
+                    //         if (new confirmation("Gostaria de compartilhar seu prêmio nas suas redes sociais?").result) {
+                    //             link.click();
+                    //         }
+                    //     }, 2500);
+                    // }).catch(err => { console.error("Erro ao capturar a página:", err) });
                 }
                 if (times === 6) clearInterval(idInterval)
             }
@@ -341,7 +341,7 @@ async function drawRoleta() {
         spin();
     });
 }
-async function registrarRoleta(ultCPF, winnerProduct) {
+async function registrarRoleta(ultCPF, winnerProduct) {   
     const pontosRoleta = 0;
     const pontosStr = document.getElementById("input-hidden-cliente").value;
     let objCliente = JSON.parse(pontosStr);
@@ -361,7 +361,7 @@ async function registrarRoleta(ultCPF, winnerProduct) {
             sku: winnerProduct.sku,
             produtoDescricao: winnerProduct.produtoDescricao,
             pontos: 0
-        }
+        }        
         const options = {
             method: 'POST',
             headers: {
@@ -370,7 +370,10 @@ async function registrarRoleta(ultCPF, winnerProduct) {
             },
             body: JSON.stringify(dados)
         }
+        console.log('com os dados de ')
+        console.log(dados)
         new GenerateFetch(URL_API_ROLETA, options);
+        console.log('registrado com sucesso')
     } catch (error) { console.log(error) }
 }
 async function puxarProdutos() {

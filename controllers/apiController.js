@@ -3,6 +3,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const nodeFetch = require("../templatesViews/classes/nodeFetch");
+const DateToRecent = require("../templatesViews/classes/DateToRecent");
 
 module.exports =
 {
@@ -161,6 +162,8 @@ module.exports =
             let pontosRoleta = req.body.pontos;
             const empresaId = req.session.uuid;
             pontosRoleta = 0;
+            console.log('chegou em pontos roleta com valores de ')
+            console.log(cpf, sku, produtoDescricao, empresaId)
 
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosRoleta ${pontosRoleta}`;
             const options = {
@@ -326,13 +329,14 @@ module.exports =
             await new nodeFetch(URLPOST, options).manageFetch();
             // fazer aqui a recuperação do cliente e devolver
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
-            const cliente = await new nodeFetch(URL).manageFetch();
+            let cliente = await new nodeFetch(URL).manageFetch();
             // fazer a somatoria de pontos e devolver ao front
             let pontosInseridos = 0;
             let totalPontos = 0;
+            cliente = new DateToRecent(cliente).getArr();
             cliente.forEach((cl, i) => {
                 totalPontos += cl.pontos;
-                if(i === cliente.length-1){                    
+                if(i === 0){                    
                     if(cl.isRoleta === false && cl.produtoDescricao === null){
                         pontosInseridos = cl.pontos
                     }
@@ -353,12 +357,13 @@ module.exports =
         try {
             console.log('chegou para tentar recuperar o cliente')
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
-            const cliente = await new nodeFetch(URL).manageFetch();
+            let cliente = await new nodeFetch(URL).manageFetch();
             let pontosInseridos = 0;
             let totalPontos = 0;
+            cliente = new DateToRecent(cliente).getArr();            
             cliente.forEach((cl, i) => {
                 totalPontos += cl.pontos;
-                if(i === cliente.length-1){
+                if(i === 0){
                     if(cl.isRoleta === false && cl.produtoDescricao === null){
                         pontosInseridos = cl.pontos
                     }
@@ -368,7 +373,7 @@ module.exports =
             let clientePontos =
             {
                 nomeCliente: cliente[cliente.length - 1].nomeCliente,
-                totalPontos, pontosInseridos
+                totalPontos, pontosInseridos, cliente
             }
             return res.status(200).send(clientePontos)
         } catch (error) {
@@ -378,45 +383,45 @@ module.exports =
         }
 
     },
-    createCliente: async (req, res) => {
-        const cpf = req.query.cpf;
-        const data = req.query.data;
-        const dados = { cpf, data };
-        console.log(dados)
-        try {
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dados)
-            }
-            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
-            await new nodeFetch(URLPOST, options).manageFetch();
-            // pegar o cliente cadastrado
-            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${dados.cpf}`
-            const cliente = await new nodeFetch(URL).manageFetch();
-            // fazer a somatoria de pontos e devolver ao front
-            let pontosInseridos = 0;
-            let totalPontos = 0;
-            cliente.forEach((cl, i) => {
-                totalPontos += cl.pontos;
-                if(i === cliente.length-1){
-                    if(cl.isRoleta === false && cl.produtoDescricao === null){
-                        pontosInseridos = cl.pontos
-                    }
-                }
-            });
-            let clientePontos =
-            {
-                nomeCliente: cliente[cliente.length - 1].nomeCliente,
-                totalPontos, pontosInseridos
-            }
-            res.status(200).send(clientePontos);
-            // fazer o redirect para apenas pegar o historico do cliente
-        } catch (error) { console.log(error); res.status(200).send(clientePontos) }
+    // createCliente: async (req, res) => {
+    //     const cpf = req.query.cpf;
+    //     const data = req.query.data;
+    //     const dados = { cpf, data };
+    //     console.log(dados)
+    //     try {
+    //         const options = {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Accept': '*/*',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(dados)
+    //         }
+    //         const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+    //         await new nodeFetch(URLPOST, options).manageFetch();
+    //         // pegar o cliente cadastrado
+    //         const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${dados.cpf}`
+    //         const cliente = await new nodeFetch(URL).manageFetch();
+    //         // fazer a somatoria de pontos e devolver ao front
+    //         let pontosInseridos = 0;
+    //         let totalPontos = 0;
+    //         cliente.forEach((cl, i) => {
+    //             totalPontos += cl.pontos;
+    //             if(i === cliente.length-1){
+    //                 if(cl.isRoleta === false && cl.produtoDescricao === null){
+    //                     pontosInseridos = cl.pontos
+    //                 }
+    //             }
+    //         });
+    //         let clientePontos =
+    //         {
+    //             nomeCliente: cliente[cliente.length - 1].nomeCliente,
+    //             totalPontos, pontosInseridos
+    //         }
+    //         res.status(200).send(clientePontos);
+    //         // fazer o redirect para apenas pegar o historico do cliente
+    //     } catch (error) { console.log(error); res.status(200).send(clientePontos) }
       
-    }
+    // }
 
 }
