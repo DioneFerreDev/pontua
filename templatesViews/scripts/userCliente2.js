@@ -45,13 +45,13 @@ function pontosProdutos() {
     const pannelprodutos = document.getElementById("pontos-produtos");
     pannelprodutos.addEventListener("click", async () => {        
         try {            
-            const URL_API_PRODUTOS = "api/puxar-produtos";            
+            const URL_API_PRODUTOS = "api/puxar-produtos-cliente";            
             const produtos = await new GenerateFetch(URL_API_PRODUTOS);
             buildList(produtos);
             // onclickListPontoProduto()            
             const overlayPontosProdutos = document.getElementById("pontos-produtos-overlay");
             overlayPontosProdutos.style.display = "flex";
-        } catch (error) { console.log(error) }
+        } catch (error) { console.log(error);window.location.href = "/unAuth" }
     })
 
     const overlayX = document.querySelector(".wrap-x");
@@ -379,10 +379,10 @@ async function registrarRoleta(ultCPF, winnerProduct) {
 async function puxarProdutos() {
     try {
         const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";        
-        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
+        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);        
         // arrProdutos = produtos;
         return produtos
-    } catch (error) { console.log(error) }
+    } catch (error) { console.log(error);window.location.href = "/unAuth" }
 }
 
 function TestaCPF(strCPF) {

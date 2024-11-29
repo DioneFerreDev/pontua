@@ -9,7 +9,6 @@ router.get("/logout", apiController.logout);
 router.get("/Empresa/Redirect", apiController.setarTokenCliente);
 router.get("/puxar-produtos", authPannel, apiController.puxarProdutos);
 router.get("/puxar-produtos-cliente", authCliente.validarToken, apiController.puxarProdutos);
-router.get("/puxar-produtos-cliente", authCliente.validarToken, apiController.puxarProdutos);
 router.get("/all-clientes", authPannel, apiController.allClientes);
 router.get("/all-users", authPannel, apiController.allUsers);
 router.post("/login", apiController.login);
