@@ -655,6 +655,7 @@ span.span-pontos {
 
 #canvas {
 	cursor: pointer;
+	user-select: none;
 }
 
 #confetti {
