@@ -347,7 +347,7 @@ module.exports =
             let clientePontos =
             {
                 nomeCliente: cliente[cliente.length - 1].nomeCliente,
-                totalPontos, pontosInseridos, cliente
+                totalPontos, pontosInseridos
             }
             return res.status(200).send(clientePontos)
         } catch (error) {
@@ -375,7 +375,7 @@ module.exports =
             let clientePontos =
             {
                 nomeCliente: cliente[cliente.length - 1].nomeCliente,
-                totalPontos, pontosInseridos, cliente
+                totalPontos, pontosInseridos
             }
             return res.status(200).send(clientePontos)
         } catch (error) {

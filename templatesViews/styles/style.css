@@ -7,18 +7,18 @@
 
 @font-face {
 	font-family: 'Helvetica';
-	src: url('./fonts/Helvetica.ttf') format('ttf');		
+	src: url('./fonts/Helvetica.ttf') format('ttf');
 	font-weight: 400;
 	font-style: normal;
-  }
-  
-  @font-face {
+}
+
+@font-face {
 	font-family: 'Helvetica Bold';
-	src: url('./fonts/Helvetica-Bold.ttf') format('ttf');		 
+	src: url('./fonts/Helvetica-Bold.ttf') format('ttf');
 	font-weight: 700;
 	font-style: normal;
-  }
-  
+}
+
 html,
 body {
 	height: 100vh;
@@ -355,9 +355,10 @@ button:hover {
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 99;
 }
-.overlay-auth{
+
+.overlay-auth {
 	background-color: rgba(255, 255, 255, 0.8) !important;
-	color:black imo !important;
+	color: black imo !important;
 }
 
 /* .overlay form {
@@ -656,6 +657,17 @@ span.span-pontos {
 #canvas {
 	cursor: pointer;
 	user-select: none;
+	-webkit-user-select: none;
+	/* Compatibilidade com navegadores WebKit */
+	-moz-user-select: none;
+	/* Compatibilidade com Firefox */
+	-ms-user-select: none;
+	touch-action: none;
+	/* Desativa gestos de toque */
+	-webkit-touch-callout: none;
+	/* Impede o menu de toque em iOS */
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 #confetti {
@@ -736,7 +748,8 @@ span.span-pontos {
 	background: #4310eb;
 	border-radius: 5px;
 }
-.containerUnAuth{
+
+.containerUnAuth {
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -744,6 +757,7 @@ span.span-pontos {
 	justify-content: space-around;
 	align-items: center;
 }
+
 @media screen and (max-width: 768px) {
 
 	html,
@@ -754,7 +768,7 @@ span.span-pontos {
 	.main-section {
 		position: relative;
 		display: block;
-	}	
+	}
 
 	.full-header {
 		display: none;
@@ -765,10 +779,11 @@ span.span-pontos {
 		overflow: hidden;
 	}
 }
+
 @media screen and (max-width: 600px) {
 	.container-header ul a {
-		font-size: 10px;		
-	}	
+		font-size: 10px;
+	}
 }
 
 

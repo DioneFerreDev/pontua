@@ -40,18 +40,18 @@ function actionRoleta() {
         window.location.href = window.location.href;
     })
 }
-function pontosProdutos() {    
+function pontosProdutos() {
     //  voltar aqui
     const pannelprodutos = document.getElementById("pontos-produtos");
-    pannelprodutos.addEventListener("click", async () => {        
-        try {            
-            const URL_API_PRODUTOS = "api/puxar-produtos-cliente";            
+    pannelprodutos.addEventListener("click", async () => {
+        try {
+            const URL_API_PRODUTOS = "api/puxar-produtos-cliente";
             const produtos = await new GenerateFetch(URL_API_PRODUTOS);
             buildList(produtos);
             // onclickListPontoProduto()            
             const overlayPontosProdutos = document.getElementById("pontos-produtos-overlay");
             overlayPontosProdutos.style.display = "flex";
-        } catch (error) { console.log(error);window.location.href = "/unAuth" }
+        } catch (error) { console.log(error); window.location.href = "/unAuth" }
     })
 
     const overlayX = document.querySelector(".wrap-x");
@@ -341,7 +341,7 @@ async function drawRoleta() {
         spin();
     });
 }
-async function registrarRoleta(ultCPF, winnerProduct) {   
+async function registrarRoleta(ultCPF, winnerProduct) {
     const pontosRoleta = 0;
     const pontosStr = document.getElementById("input-hidden-cliente").value;
     let objCliente = JSON.parse(pontosStr);
@@ -353,7 +353,7 @@ async function registrarRoleta(ultCPF, winnerProduct) {
     // }
     // fazer a verificação aqui
     // aqui roleta
-    
+
     try {
         const URL_API_ROLETA = "api/cliente-roleta";
         const dados = {
@@ -361,7 +361,7 @@ async function registrarRoleta(ultCPF, winnerProduct) {
             sku: winnerProduct.sku,
             produtoDescricao: winnerProduct.produtoDescricao,
             pontos: 0
-        }        
+        }
         const options = {
             method: 'POST',
             headers: {
@@ -378,11 +378,11 @@ async function registrarRoleta(ultCPF, winnerProduct) {
 }
 async function puxarProdutos() {
     try {
-        const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";        
-        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);        
+        const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";
+        const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
         // arrProdutos = produtos;
         return produtos
-    } catch (error) { console.log(error);window.location.href = "/unAuth" }
+    } catch (error) { console.log(error); window.location.href = "/unAuth" }
 }
 
 function TestaCPF(strCPF) {
@@ -406,19 +406,15 @@ function TestaCPF(strCPF) {
     return true;
 }
 function onInserir() {
-
     const cpf = document.getElementById("cpf");
     cpf.addEventListener("keyup", e => {
         let cpfUser = e.target.value;
-
         cpfUser = cpfUser.replace(/\./g, "").replace(/-/g, "");
-
         if (cpfUser.length === 11) {
             if (!TestaCPF(cpfUser)) {
                 alert("CPF INVÁLIDO!!!");
                 ultCPF = cpfUser
-            } else {
-
+            } else {                
                 if (ultCPF !== cpfUser) inserirAlterarCPF(cpfUser)
 
                 ultCPF = cpfUser
@@ -444,9 +440,12 @@ async function inserirAlterarCPF(cpf) {
             },
             body: JSON.stringify(dados)
         }
-        const cliente = await new GenerateFetch(URL_API_CLIENTE, options, true);
-        console.log(cliente);
-        if (cliente.length === 0) return alert('cliente n existente');
+        const cliente = await new GenerateFetch(URL_API_CLIENTE, options, true);       
+        if (cliente.length === 0) {
+            ultCPF = "";
+            return alert('cliente n existente');
+        }
+        if (cliente.expired === true) window.location.href = cliente.url;
         const msg = (cliente.nomeCliente === null) ? `Você tem atualmente ${cliente.totalPontos} pontos no total!!` : `${cliente.nomeCliente} tem atualmente ${cliente.totalPontos} pontos no total!!`;
         let pontosTela = document.getElementById("pontos-atuais");
         pontosTela.innerHTML = msg
@@ -460,7 +459,8 @@ async function inserirAlterarCPF(cpf) {
                 clPontos.value = strPontos;
                 actionRoleta();
             }
-        }                          
+        }
+        ultCPF = "";
     } catch (error) { console.log(error) }
 }
 function receivePontos(pontos) {
