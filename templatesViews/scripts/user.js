@@ -33,13 +33,18 @@ function managerFunction() {
 async function sendPoints() {
     try {
         let pontos = document.getElementById("box-pontos").value;
+        let cpf = document.getElementById("box-cpf").value;
+        if (cpf === null) return;
         if (pontos === "") return
         pontos = pontos.replace(",", ".");
+        cpf = cpf.replace(/\./g, "").replace(/-/g, "");
+        const data = new calendario().time;
         pontos = Number(pontos);
         document.getElementById("box-pontos").value = "";
+        document.getElementById("box-cpf").value = "";
 
         const URL_API_SEND_API = "api/send-points";
-        const dados = { pontos };
+        const dados = { pontos, cpf, data };
         const options = {
             method: 'POST',
             headers: {
@@ -48,7 +53,8 @@ async function sendPoints() {
             },
             body: JSON.stringify(dados)
         }
-        await new GenerateFetch(URL_API_SEND_API, options);
+        const isOk = await new GenerateFetch(URL_API_SEND_API, options, true);
+        if (isOk.error) alert("CPF NÃO ENCONTRADO!!!");
     } catch (error) { console.log(error) }
 }
 function quit() {
@@ -422,6 +428,7 @@ async function preencherTabUsers() {
 function maskCPF() {
     $('#cpf-cliente').mask('000.000.000-00', { reverse: true });
     $('#cliente-cpf').mask('000.000.000-00', { reverse: true });
+    $('#box-cpf').mask('000.000.000-00', { reverse: true });
 }
 async function procurarMovimentacoesCliente(cpf) {
     if (cpf.length === 0) {

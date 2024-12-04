@@ -380,7 +380,6 @@ async function puxarProdutos() {
         const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";
         const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
         // arrProdutos = produtos;
-        console.log(produtos.status)
         if(produtos.status === '401') window.location.href = "/unAuth";
         return produtos
     } catch (error) { console.log(error); window.location.href = "/unAuth" }

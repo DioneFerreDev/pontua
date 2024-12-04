@@ -141,7 +141,11 @@ module.exports =
         try {
             const empresaId = req.session.uuid;
             const points = req.body.pontos;
+            const cpf = req.body.cpf;
+            const data = req.body.data;
 
+            const URL_CLIENTE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`;
+            await new nodeFetch(URL_CLIENTE).manageFetch();
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?uuid=${empresaId}&valor=${points}`;
             const options = {
                 method: "POST",
@@ -149,9 +153,21 @@ module.exports =
                     "Accept": "*/*"
                 }
             }
+            // voltar aqui
             await new nodeFetch(URL, options).manageFetch();
-            res.status(200).send("OK");
-        } catch (error) { console.log(error); res.send({}) }
+            const optionsCreate = {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cpf, data })
+            }
+            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
+            await new nodeFetch(URLPOST, optionsCreate).manageFetch();
+
+            res.status(200).send({ error: false });
+        } catch (error) { console.log(error); res.send({ error: true }) }
     },
     clienteRoleta: async (req, res) => {
         try {
@@ -338,8 +354,8 @@ module.exports =
             cliente = new DateToRecent(cliente).getArr();
             cliente.forEach((cl, i) => {
                 totalPontos += cl.pontos;
-                if(i === 0){                    
-                    if(cl.isRoleta === false && cl.produtoDescricao === null){
+                if (i === 0) {
+                    if (cl.isRoleta === false && cl.produtoDescricao === null) {
                         pontosInseridos = cl.pontos
                     }
                 }
@@ -362,11 +378,11 @@ module.exports =
             let cliente = await new nodeFetch(URL).manageFetch();
             let pontosInseridos = 0;
             let totalPontos = 0;
-            cliente = new DateToRecent(cliente).getArr();            
+            cliente = new DateToRecent(cliente).getArr();
             cliente.forEach((cl, i) => {
                 totalPontos += cl.pontos;
-                if(i === 0){
-                    if(cl.isRoleta === false && cl.produtoDescricao === null){
+                if (i === 0) {
+                    if (cl.isRoleta === false && cl.produtoDescricao === null) {
                         pontosInseridos = cl.pontos
                     }
                 }
@@ -384,46 +400,5 @@ module.exports =
             res.status(404).send([])
         }
 
-    },
-    // createCliente: async (req, res) => {
-    //     const cpf = req.query.cpf;
-    //     const data = req.query.data;
-    //     const dados = { cpf, data };
-    //     console.log(dados)
-    //     try {
-    //         const options = {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Accept': '*/*',
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(dados)
-    //         }
-    //         const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
-    //         await new nodeFetch(URLPOST, options).manageFetch();
-    //         // pegar o cliente cadastrado
-    //         const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${dados.cpf}`
-    //         const cliente = await new nodeFetch(URL).manageFetch();
-    //         // fazer a somatoria de pontos e devolver ao front
-    //         let pontosInseridos = 0;
-    //         let totalPontos = 0;
-    //         cliente.forEach((cl, i) => {
-    //             totalPontos += cl.pontos;
-    //             if(i === cliente.length-1){
-    //                 if(cl.isRoleta === false && cl.produtoDescricao === null){
-    //                     pontosInseridos = cl.pontos
-    //                 }
-    //             }
-    //         });
-    //         let clientePontos =
-    //         {
-    //             nomeCliente: cliente[cliente.length - 1].nomeCliente,
-    //             totalPontos, pontosInseridos
-    //         }
-    //         res.status(200).send(clientePontos);
-    //         // fazer o redirect para apenas pegar o historico do cliente
-    //     } catch (error) { console.log(error); res.status(200).send(clientePontos) }
-      
-    // }
-
+    }
 }
