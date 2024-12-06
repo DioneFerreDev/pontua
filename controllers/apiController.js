@@ -4,6 +4,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const nodeFetch = require("../templatesViews/classes/nodeFetch");
 const DateToRecent = require("../templatesViews/classes/DateToRecent");
+const IsCPF = require("../templatesViews/classes/IsCPF");
 
 module.exports =
 {
@@ -144,8 +145,9 @@ module.exports =
             const cpf = req.body.cpf;
             const data = req.body.data;
 
-            const URL_CLIENTE = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${cpf}`;
-            await new nodeFetch(URL_CLIENTE).manageFetch();
+            console.log(cpf)
+            if(!new IsCPF(cpf).TestaCPF()) return  res.status(400).send({error:true, message:"CPF Não válido!!!"});
+
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/PontosTemp?uuid=${empresaId}&valor=${points}`;
             const options = {
                 method: "POST",
@@ -167,7 +169,7 @@ module.exports =
             await new nodeFetch(URLPOST, optionsCreate).manageFetch();
 
             res.status(200).send({ error: false });
-        } catch (error) { console.log(error); res.send({ error: true }) }
+        } catch (error) { console.log(error); res.send({ error: true, message:"Algo deu errado ao enviar os pontos no CPF" }) }
     },
     clienteRoleta: async (req, res) => {
         try {
@@ -333,47 +335,7 @@ module.exports =
     },
     clienteCPF: async (req, res) => {
         const data = req.body;
-
-        try {
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }
-            const URLPOST = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/Create`;
-            await new nodeFetch(URLPOST, options).manageFetch();
-            // fazer aqui a recuperação do cliente e devolver
-            const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
-            let cliente = await new nodeFetch(URL).manageFetch();
-            // fazer a somatoria de pontos e devolver ao front
-            let pontosInseridos = 0;
-            let totalPontos = 0;
-            cliente = new DateToRecent(cliente).getArr();
-            cliente.forEach((cl, i) => {
-                totalPontos += cl.pontos;
-                if (i === 0) {
-                    if (cl.isRoleta === false && cl.produtoDescricao === null) {
-                        pontosInseridos = cl.pontos
-                    }
-                }
-            });
-            let clientePontos =
-            {
-                nomeCliente: cliente[cliente.length - 1].nomeCliente,
-                totalPontos, pontosInseridos
-            }
-            return res.status(200).send(clientePontos)
-        } catch (error) {
-            // caso n enviou pontos tentar recuperar
-            console.log(error)
-            console.log(data)
-            console.log('n enviado pontos')
-        }
-        try {
-            console.log('chegou para tentar recuperar o cliente')
+        try {            
             const URL = `https://bwa45br1c7.execute-api.us-east-1.amazonaws.com/v1/Cliente/${data.cpf}`;
             let cliente = await new nodeFetch(URL).manageFetch();
             let pontosInseridos = 0;

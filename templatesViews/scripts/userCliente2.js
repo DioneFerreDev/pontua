@@ -263,7 +263,7 @@ async function drawRoleta() {
             //usando confeti
 
             winnerProduct = itemsoBJ.filter(it => it.produtoDescricao === winnerProduct)[0];
-            registrarRoleta( winnerProduct);
+            registrarRoleta(winnerProduct);
             document.querySelector(".triangle").style.transition = "transform 0.5s ease";
             document.querySelector(".triangle").style.transform = "rotate(0deg)";
 
@@ -316,7 +316,7 @@ async function drawRoleta() {
         window.requestAnimationFrame(animate);
     }
 
-    function spin() {        
+    function spin() {
         if (speed !== 0) {
             return;
         }
@@ -328,7 +328,7 @@ async function drawRoleta() {
 
     document.getElementById("canvas").addEventListener("click", () => {
         let clPontos = document.getElementById("input-hidden-cliente").value;
-        clPontos = JSON.parse(clPontos)        
+        clPontos = JSON.parse(clPontos)
         if (ultCPF === "" || ultCPF === null || clPontos.pontosInseridos < 500) {
             // voltar aqui para fazer a validação do valor mínimo para jogar a roleta
             alert("É PRECISO ATINGIR VALOR MÍNIMO E LOGAR COM SEU CPF PARA JOGAR!!");
@@ -369,7 +369,7 @@ async function registrarRoleta(winnerProduct) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dados)
-        }        
+        }
         new GenerateFetch(URL_API_ROLETA, options);
         console.log('registrado com sucesso')
         ultCPF = "";
@@ -380,7 +380,7 @@ async function puxarProdutos() {
         const URL_API_PUXAR_PRODUTOS = "api/puxar-produtos-cliente";
         const produtos = await new GenerateFetch(URL_API_PUXAR_PRODUTOS);
         // arrProdutos = produtos;
-        if(produtos.status === '401') window.location.href = "/unAuth";
+        if (produtos.status === '401') window.location.href = "/unAuth";
         return produtos
     } catch (error) { console.log(error); window.location.href = "/unAuth" }
 }
@@ -414,7 +414,7 @@ function onInserir() {
             if (!TestaCPF(cpfUser)) {
                 alert("CPF INVÁLIDO!!!");
                 ultCPF = cpfUser
-            } else {                
+            } else {
                 if (ultCPF !== cpfUser) inserirAlterarCPF(cpfUser)
 
                 ultCPF = cpfUser
@@ -431,7 +431,7 @@ function onInserir() {
 async function inserirAlterarCPF(cpf) {
     try {
         // RECOMEÇAR
-        let dados = { cpf: cpf, data: new calendario().time };
+        let dados = { cpf: cpf };
         const URL_API_CLIENTE = "api/cliente-CPF";
         const options = {
             method: "POST",
@@ -441,7 +441,7 @@ async function inserirAlterarCPF(cpf) {
             },
             body: JSON.stringify(dados)
         }
-        const cliente = await new GenerateFetch(URL_API_CLIENTE, options, true);       
+        const cliente = await new GenerateFetch(URL_API_CLIENTE, options, true);
         if (cliente.length === 0) {
             ultCPF = "";
             return alert('cliente n existente');
@@ -458,7 +458,7 @@ async function inserirAlterarCPF(cpf) {
                 let strPontos = { pontosInseridos: cliente.pontosInseridos };
                 strPontos = JSON.stringify(strPontos);
                 clPontos.value = strPontos;
-                actionRoleta();                
+                actionRoleta();
             }
         }
         // ultCPF = "";

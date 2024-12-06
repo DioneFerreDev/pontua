@@ -54,7 +54,7 @@ async function sendPoints() {
             body: JSON.stringify(dados)
         }
         const isOk = await new GenerateFetch(URL_API_SEND_API, options, true);
-        if (isOk.error) alert("CPF NÃO ENCONTRADO!!!");
+        if (isOk.error) alert(isOk.message);
     } catch (error) { console.log(error) }
 }
 function quit() {
